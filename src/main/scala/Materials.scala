@@ -1,4 +1,4 @@
-sealed class Material(buyPrice: Double, sellPrice: Double, isIllegal: Boolean = false)
+sealed class Material(val _buyPrice: Double, val _sellPrice: Double, val _isIllegal: Boolean = false, val _maxStock: Option[Int] = None)
 
 case class Astatine(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class Hydrogen(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
@@ -13,7 +13,7 @@ case class Titanium(buyPrice: Double, sellPrice: Double) extends Material(buyPri
 case class AggricultureSupplies(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class Quartz(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class Corundum(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Diamond(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
+case class Diamond(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, _maxStock = Some(4000))
 case class Beryl(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class Laranite(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class ProcessedFood(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
@@ -22,5 +22,5 @@ case class Stims(buyPrice: Double, sellPrice: Double) extends Material(buyPrice,
 case class DistilledSpirits(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class MedicalSupplies(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
 case class Scrap(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Altruciatoxin(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, isIllegal = true)
-case class WiDoW(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, isIllegal = true)
+case class Altruciatoxin(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, _isIllegal = true, _maxStock = Some(5000))
+case class WiDoW(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, _isIllegal = true, _maxStock = Some(1000))

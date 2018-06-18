@@ -1,4 +1,4 @@
-sealed class Base (
+sealed case class Base (
   astatine: Option[Astatine] = None,
   hydrogen: Option[Hydrogen] = None,
   fluorine: Option[Fluorine] = None,
@@ -23,7 +23,17 @@ sealed class Base (
   scrap: Option[Scrap] = None,
   altruciatoxin: Option[Altruciatoxin] = None,
   wiDoW: Option[WiDoW] = None,
-)
+) {
+  def profitFromOptions[T <: Material](buy: Option[T], sell: Option[T]): Option[Float] = {
+    buy.flatMap{ b =>
+      sell.map(_._sellPrice - b._buyPrice)
+    }
+  }
+
+  def bestProfit(o: Base, ship: Ship): (Material, Float) = {
+    profitFromOptions(astatine, o.astatine)
+  }
+}
 
 case object PortOlisar extends Base(
   astatine = Some(Astatine(0, 8.25)),
