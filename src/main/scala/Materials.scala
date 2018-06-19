@@ -1,26 +1,27 @@
-sealed class Material(val _buyPrice: Double, val _sellPrice: Double, val _isIllegal: Boolean = false, val _maxStock: Option[Int] = None)
+sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None)
 
-case class Astatine(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Hydrogen(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Fluorine(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Iodine(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Chlorine(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Agricium(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Gold(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Tungsten(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Aluminum(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Titanium(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class AggricultureSupplies(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Quartz(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Corundum(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Diamond(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, _maxStock = Some(4000))
-case class Beryl(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Laranite(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class ProcessedFood(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Waste(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Stims(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class DistilledSpirits(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class MedicalSupplies(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Scrap(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice)
-case class Altruciatoxin(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, _isIllegal = true, _maxStock = Some(5000))
-case class WiDoW(buyPrice: Double, sellPrice: Double) extends Material(buyPrice, sellPrice, _isIllegal = true, _maxStock = Some(1000))
+case object Astatine extends Material
+case object Hydrogen extends Material
+case object Fluorine extends Material
+case object Iodine extends Material
+case object Chlorine extends Material
+case object Agricium extends Material
+case object Gold extends Material
+case object Tungsten extends Material
+case object Aluminum extends Material
+case object Titanium extends Material
+case object AggricultureSupplies extends Material
+case object Quartz extends Material
+case object Corundum extends Material
+case object Diamond extends Material(maxStock = Some(4000))
+case object Beryl extends Material
+case object Laranite extends Material
+case object ProcessedFood extends Material
+case object Waste extends Material
+case object Stims extends Material
+case object DistilledSpirits extends Material
+case object MedicalSupplies extends Material
+case object Scrap extends Material
+case object Altruciatoxin extends Material(isIllegal = true, maxStock = Some(5000))
+case object WiDoW extends Material(isIllegal = true, maxStock = Some(1000))
+

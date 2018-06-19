@@ -1,3 +1,3 @@
-case class Ship(shipCargoSize: Int, initialInvestment: Int) {
+case class Ship(shipCargoSize: Int) {
   val cargoSizeInUnits: Int = shipCargoSize * 100
 }
