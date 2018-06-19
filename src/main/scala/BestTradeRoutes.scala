@@ -20,7 +20,7 @@ object BestTradeRoutes {
     HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
 
   def main(args: Array[String]): Unit = {
-    val initialInvestment = 5000
+    val initialInvestment = 50000
     val freelancer = Ship(66)
     calculateRoute(bases, freelancer, initialInvestment)
   }
@@ -31,7 +31,7 @@ object BestTradeRoutes {
         case nextBase if nextBase != currentBase =>
           currentBase.bestProfit(nextBase, ship, investment, allowIllegal) match {
             case Some((material, profit)) =>
-              val allJumps: Seq[(Base, Material, Double)] = jumps :+ (currentBase, material, (investment + profit).toDouble / investment - 1)
+              val allJumps: Seq[(Base, Material, Double)] = jumps :+ (currentBase, material, profit.toDouble / investment)
               if (nextBase == startingBase) {
                 Seq((allJumps, allJumps.map(_._3).sum / allJumps.length))
               } else {
@@ -50,6 +50,7 @@ object BestTradeRoutes {
     jumps.foreach { case (base, material, profit) =>
       println(s"$base -> $material(${profit.toPercent})")
     }
+    println(s"Expected returns: ${initialInvestment * (jumps.foldLeft(1.toDouble)((acc, x) => acc * (x._3 + 1)) - 1)}")
     //file.close()
   }
 }
