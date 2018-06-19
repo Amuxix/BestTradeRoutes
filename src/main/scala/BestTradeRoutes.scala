@@ -1,3 +1,7 @@
+import BestTradeRoutes.bases
+
+import scala.annotation.tailrec
+
 object BestTradeRoutes {
   implicit class ExtendedDouble(x: Double) {
     def truncated(n: Int): Double = {
@@ -22,10 +26,36 @@ object BestTradeRoutes {
   def main(args: Array[String]): Unit = {
     val initialInvestment = 50000
     val freelancer = Ship(66)
-    calculateRoute(bases, freelancer, initialInvestment)
+    val startingBase = PortOlisar
+    //calculateRoute(bases, freelancer, initialInvestment)
+    val jumps: Seq[(Base, Material, Int)] = calculateNextBestJump(startingBase, bases, freelancer, initialInvestment)
+    jumps.foreach { case (base, material, profit) =>
+      println(s"$base -> $material: $profit")
+    }
+
   }
 
-  def calculateRoute(bases: Seq[Base], ship: Ship, initialInvestment: Int, allowIllegal: Boolean = false): Unit = {
+  def calculateNextBestJump(startingBase: Base, bases: Seq[Base], ship: Ship, initialInvestment: Int, allowIllegal: Boolean = false) = {
+    @tailrec def inner(startBase: Base, remainingBases: Seq[Base], investment: Int, jumps: Seq[(Base, Material, Int)] = Seq.empty): Seq[(Base, Material, Int)] = {
+      remainingBases match {
+        case Seq() => jumps
+        case nextBase :: remainingBases =>
+          startBase.bestProfit(nextBase, ship, investment, allowIllegal) match {
+            case None => jumps
+            case Some((material, profit)) => inner(nextBase, remainingBases.tail, investment + profit, (nextBase, material, profit) +: jumps)
+          }
+      }
+    }
+    val possibleBases = bases diff Seq(startingBase)
+    possibleBases.permutations.toStream.par.map { combinationBases =>
+      //println(s"${combinationBases.head} -> ${combinationBases.tail}")
+      val route = inner(combinationBases.head, combinationBases.tail, initialInvestment)
+      //println(route)
+      route
+    } maxBy (_.foldLeft(0)(_ + _._3))
+  }
+
+  /*def calculateRoute(bases: Seq[Base], ship: Ship, initialInvestment: Int, allowIllegal: Boolean = false): Unit = {
     def inner(startingBase: Base, currentBase: Base, remainingBases: Seq[Base], investment: Int, jumps: Seq[(Base, Material, Double)]): Seq[(Seq[(Base, Material, Double)], Double)] = {
       remainingBases.collect {
         case nextBase if nextBase != currentBase =>
@@ -52,5 +82,5 @@ object BestTradeRoutes {
     }
     println(s"Expected returns: ${initialInvestment * (jumps.foldLeft(1.toDouble)((acc, x) => acc * (x._3 + 1)) - 1)}")
     //file.close()
-  }
+  }*/
 }
