@@ -1,4 +1,7 @@
-import BestTradeRoutes.bases
+package me.amuxix
+
+import me.amuxix.ships.Freelancer
+import me.amuxix.stanton.Bases._
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -26,8 +29,7 @@ object BestTradeRoutes {
   val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, KudreOre, TerraMillsHydroFarm, GaletteFamilyFarms, HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
 
   def main(args: Array[String]): Unit = {
-    val initialInvestment = 5000
-    val freelancer = Ship(66)
+    val initialInvestment = args.head.toInt
     val startingBase = PortOlisar
     //calculateRoute(bases, freelancer, initialInvestment)
     var investment = initialInvestment

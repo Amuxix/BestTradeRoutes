@@ -1,3 +1,5 @@
+package me.amuxix
+
 sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None)
 
 case object Astatine extends Material
