@@ -1,6 +1,6 @@
 sealed class Base (val buy: Map[Material, Double], val sell: Map[Material, Double]) {
 
-  def bestProfit(other: Base, ship: Ship, investment: Int, allowIllegal: Boolean = false): Option[(Material, Int)] = {
+  def bestProfit(other: Base, ship: Ship, investment: Int, allowIllegal: Boolean): Option[(Material, Int)] = {
     this.buy.collect {
       case (material, cost) if other.sell.contains(material) && (!material.isIllegal || allowIllegal) =>
         val moneyBuys: Int = (investment / cost).floor.toInt min ship.cargoSizeInUnits
@@ -9,6 +9,12 @@ sealed class Base (val buy: Map[Material, Double], val sell: Map[Material, Doubl
     } match {
       case empty if empty.isEmpty => None
       case nonEmpty => Some(nonEmpty.maxBy(_._2))
+    }
+  }
+
+  def canTrade(other: Base, allowIllegal: Boolean = false): Boolean = {
+    buy.exists { case (material, _) =>
+      other.sell.contains(material) && (!material.isIllegal || allowIllegal)
     }
   }
 }
