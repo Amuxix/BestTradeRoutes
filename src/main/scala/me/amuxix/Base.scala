@@ -13,6 +13,15 @@ sealed class Base(val buy: Map[Material, Double], val sell: Map[Material, Double
       case nonEmpty => Some(nonEmpty.maxBy(_._2))
     }
   }
+
+  def distanceFromOrbit: Int = {
+    this match {
+      case base: LandBase => base.distanceFromOrbitalMarker
+      case _ => 0
+    }
+  }
+
+  def distanceFrom(other: Base): Int = distanceFromOrbit + other.distanceFromOrbit
 }
 
 class LandBase(
@@ -20,7 +29,7 @@ class LandBase(
   sell: Map[Material, Double],
   celestialBody: CelestialBody,
   val closestOrbitalMarker: OrbitalMarker,
-  val distanceFromOrbitalMarket: Int
+  val distanceFromOrbitalMarker: Int
 ) extends Base(buy, sell, celestialBody)
 
 class SpaceStation(
