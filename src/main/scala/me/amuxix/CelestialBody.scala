@@ -1,6 +1,6 @@
 package me.amuxix
 
-sealed trait CelestialBody
+sealed class CelestialBody(val atmosphere: Int)
 
-class Moon(val planet: Planet) extends CelestialBody
-class Planet extends CelestialBody
+class Moon(val planet: Planet, atmosphere: Int) extends CelestialBody(atmosphere)
+class Planet(atmosphere: Int) extends CelestialBody(atmosphere)
