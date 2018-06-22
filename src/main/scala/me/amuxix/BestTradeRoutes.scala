@@ -1,6 +1,5 @@
 package me.amuxix
 
-import me.amuxix.ships.Freelancer
 import me.amuxix.stanton.Bases._
 
 import scala.annotation.tailrec
@@ -29,23 +28,29 @@ object BestTradeRoutes {
   val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, KudreOre, TerraMillsHydroFarm, GaletteFamilyFarms, HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
 
   def main(args: Array[String]): Unit = {
-    val initialInvestment = args.head.toInt
+    val ship = Ship.fromString(args.head)
+    val initialInvestment = args(1).toInt
     val startingBase = PortOlisar
     //calculateRoute(bases, freelancer, initialInvestment)
     var investment = initialInvestment
     var base: Base = startingBase
     println(s"Starting at $base")
     while (true) {
-      val (nextBase, material, profit) = calculateNextBestJump(base, bases, freelancer, investment)
+      val (nextBase, material, profit) = calculateNextBestJump(base, bases, ship, investment)
+      nextBase match {
+        case nextBase: LandBase =>
+          println(s"$nextBase:${nextBase.celestialBody}(${nextBase.closestOrbitalMarker}) -> $material: $profit")
+        case nextBase: SpaceStation =>
+          println(s"$nextBase:${base.celestialBody} -> $material: $profit")
+      }
       base = nextBase
       investment += profit
       println(s"$material($profit) -> $nextBase")
       scala.io.StdIn.readLine()
     }
-
   }
 
-  /*def calculateNextBestJump(startingBase: Base, bases: Seq[Base], ship: Ship, initialInvestment: Int, lookahead: Int, allowIllegal: Boolean = false) = {
+  /*def calculateNextBestJump(startingBase: Base, bases: Seq[Base], ship: Ship, initialInvestment: Int, lookahead: Int, allowIllegal: Boolean = false): Seq[(Base, Material, Int)] = {
     @tailrec def inner(startBase: Base, remainingBases: Seq[Base], investment: Int, jumps: Seq[(Base, Material, Int)] = Seq.empty): Seq[(Base, Material, Int)] = {
       if (jumps.length == lookahead) {
         return jumps
