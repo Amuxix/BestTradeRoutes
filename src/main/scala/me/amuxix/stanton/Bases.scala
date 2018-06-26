@@ -52,7 +52,7 @@ object Bases {
     ),
     Daymar,
     OM6,
-    0
+    308
   )
 
   case object BountyfulHarvestHydroponics extends LandBase(
@@ -67,7 +67,7 @@ object Bases {
     ),
     Daymar,
     OM6,
-    0
+    240
   )
 
   case object ShubinMiningFacility extends LandBase(
@@ -87,7 +87,7 @@ object Bases {
     ),
     Daymar,
     OM1,
-    0
+    351
   )
 
   case object KudreOre extends LandBase(
@@ -108,7 +108,7 @@ object Bases {
     ),
     Daymar,
     OM6,
-    0
+    377
   )
 
   case object TerraMillsHydroFarm extends LandBase(
@@ -123,7 +123,7 @@ object Bases {
     ),
     Cellin,
     OM2,
-    0
+    242
   )
 
   case object GaletteFamilyFarms extends LandBase(
@@ -138,7 +138,7 @@ object Bases {
     ),
     Cellin,
     OM1,
-    0
+    293
   )
 
   case object HickesResearchOutpost extends LandBase(
@@ -154,7 +154,7 @@ object Bases {
     ),
     Cellin,
     OM6,
-    0
+    201
   )
 
   case object TramMyersMining extends LandBase(
@@ -177,10 +177,10 @@ object Bases {
     ),
     Cellin,
     OM6,
-    0
+    177
   )
 
-  case object GrimHex extends LandBase(
+  case object GrimHex extends SpaceStation(
     Map(
       Gold -> 5.96,
       Diamond -> 6.8,
@@ -206,8 +206,6 @@ object Bases {
       WiDoW -> 27
     ),
     Yela,
-    OM6,
-    0
   )
 
   case object ArcCorpMiningArea157 extends LandBase(
@@ -228,7 +226,7 @@ object Bases {
     ),
     Yela,
     OM2,
-    0
+    355
   )
 
   case object BensonMiningOutpost extends LandBase(
@@ -249,7 +247,7 @@ object Bases {
     ),
     Yela,
     OM5,
-    0
+    285
   )
 
   case object DeakingReaserchOutpost extends LandBase(
@@ -266,7 +264,7 @@ object Bases {
     ),
     Yela,
     OM1,
-    0
+    366
   )
 
   case object DrugLab extends LandBase(
@@ -279,7 +277,7 @@ object Bases {
     ),
     Yela,
     OM4,
-    0
+    351
   )
 
   case object Levski extends LandBase(
@@ -313,6 +311,6 @@ object Bases {
     ),
     Delamar,
     OM5,
-    0
+    84
   )
 }

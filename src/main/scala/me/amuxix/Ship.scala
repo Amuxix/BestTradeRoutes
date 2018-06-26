@@ -1,25 +1,25 @@
 package me.amuxix
 
 object Ship {
-  def fromString(shipName: String): Ship = shipName.toLowerCase match {
-    case `300i`.getClass.getSimpleName.toLowerCase => `300i`
-    case `315p`.getClass.getSimpleName.toLowerCase => `315p`
-    case `325a`.getClass.getSimpleName.toLowerCase => `325a`
-    case F7CHornet.getClass.getSimpleName.toLowerCase => F7CHornet
-    case MPUVCargo.getClass.getSimpleName.toLowerCase => MPUVCargo
-    case ReliantKore.getClass.getSimpleName.toLowerCase => ReliantKore
-    case AuroraCL.getClass.getSimpleName.toLowerCase => AuroraCL
-    case MustangAlpha.getClass.getSimpleName.toLowerCase => MustangAlpha
-    case AvengerTitan.getClass.getSimpleName.toLowerCase => AvengerTitan
-    case AvengerTitanRenegade.getClass.getSimpleName.toLowerCase => AvengerTitanRenegade
-    case CutlassBlack.getClass.getSimpleName.toLowerCase => CutlassBlack
-    case Freelancer.getClass.getSimpleName.toLowerCase => Freelancer
-    case ConstellationAndromeda.getClass.getSimpleName.toLowerCase => ConstellationAndromeda
-    case ConstellationAquila.getClass.getSimpleName.toLowerCase => ConstellationAquila
-    case Starfarer.getClass.getSimpleName.toLowerCase => Starfarer
-    case StarfarerGemini.getClass.getSimpleName.toLowerCase => StarfarerGemini
-    case Caterpillar.getClass.getSimpleName.toLowerCase => Caterpillar
-    case CaterpillarPirateEdition.getClass.getSimpleName.toLowerCase => CaterpillarPirateEdition
+  def fromString(shipName: String): Ship = s"$shipName$$" match {
+    case s if s.compareToIgnoreCase(`300i`.getClass.getSimpleName) == 0 => `300i`
+    case s if s.compareToIgnoreCase(`315p`.getClass.getSimpleName) == 0 => `315p`
+    case s if s.compareToIgnoreCase(`325a`.getClass.getSimpleName) == 0 => `325a`
+    case s if s.compareToIgnoreCase(F7CHornet.getClass.getSimpleName) == 0 => F7CHornet
+    case s if s.compareToIgnoreCase(MPUVCargo.getClass.getSimpleName) == 0 => MPUVCargo
+    case s if s.compareToIgnoreCase(ReliantKore.getClass.getSimpleName) == 0 => ReliantKore
+    case s if s.compareToIgnoreCase(AuroraCL.getClass.getSimpleName) == 0 => AuroraCL
+    case s if s.compareToIgnoreCase(MustangAlpha.getClass.getSimpleName) == 0 => MustangAlpha
+    case s if s.compareToIgnoreCase(AvengerTitan.getClass.getSimpleName) == 0 => AvengerTitan
+    case s if s.compareToIgnoreCase(AvengerTitanRenegade.getClass.getSimpleName) == 0 => AvengerTitanRenegade
+    case s if s.compareToIgnoreCase(CutlassBlack.getClass.getSimpleName) == 0 => CutlassBlack
+    case s if s.compareToIgnoreCase(Freelancer.getClass.getSimpleName) == 0 => Freelancer
+    case s if s.compareToIgnoreCase(ConstellationAndromeda.getClass.getSimpleName) == 0 => ConstellationAndromeda
+    case s if s.compareToIgnoreCase(ConstellationAquila.getClass.getSimpleName) == 0 => ConstellationAquila
+    case s if s.compareToIgnoreCase(Starfarer.getClass.getSimpleName) == 0 => Starfarer
+    case s if s.compareToIgnoreCase(StarfarerGemini.getClass.getSimpleName) == 0 => StarfarerGemini
+    case s if s.compareToIgnoreCase(Caterpillar.getClass.getSimpleName) == 0 => Caterpillar
+    case s if s.compareToIgnoreCase(CaterpillarPirateEdition.getClass.getSimpleName) == 0 => CaterpillarPirateEdition
   }
 }
 

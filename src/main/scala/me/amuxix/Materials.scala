@@ -1,6 +1,8 @@
 package me.amuxix
 
-sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None)
+sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None) {
+  def prettyPrint: String = s"$this${" " * (AggricultureSupplies.toString.length - this.toString.length)}"
+}
 
 case object Astatine extends Material
 case object Hydrogen extends Material

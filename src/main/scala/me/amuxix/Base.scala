@@ -1,27 +1,48 @@
 package me.amuxix
 
-sealed class Base(val buy: Map[Material, Double], val sell: Map[Material, Double], val celestialBody: CelestialBody) {
+import me.amuxix.BestTradeRoutes.{allowIllegal, profitToBases}
+import me.amuxix.stanton.Bases.BountyfulHarvestHydroponics
+import me.amuxix.stanton.planets.Crusader
 
-  def bestProfit(other: Base, ship: Ship, investment: Int, allowIllegal: Boolean = false): Option[(Material, Int)] = {
-    this.buy.collect {
-      case (material, cost) if other.sell.contains(material) && (!material.isIllegal || allowIllegal) =>
-        val moneyBuys: Int = (investment / cost).floor.toInt min ship.cargoSizeInUnits
-        val maxStock: Int = material.maxStock.fold(moneyBuys)(_ min moneyBuys)
-        material -> (maxStock * (other.sell(material) - cost)).floor.toInt
-    } match {
-      case empty if empty.isEmpty => None
-      case nonEmpty => Some(nonEmpty.maxBy(_._2))
-    }
-  }
+
+sealed class Base(val buy: Map[Material, Double], val sell: Map[Material, Double], val celestialBody: CelestialBody) {
 
   def distanceFromOrbit: Int = {
     this match {
       case base: LandBase => base.distanceFromOrbitalMarker
-      case _ => 0
+      case _ => 10
     }
   }
 
-  def distanceFrom(other: Base): Int = distanceFromOrbit + other.distanceFromOrbit
+  def distanceTo(other: Base): Int = celestialBody.atmosphere + other.distanceFromOrbit
+
+  def prettyPrint: String = s"$this${" " * (BountyfulHarvestHydroponics.toString.length - this.toString.length)}"
+
+  def prettyPrintNextJump(nextBase: Base): String = {
+    nextBase match {
+      case nextBase: LandBase if this != nextBase =>
+        s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}(${nextBase.closestOrbitalMarker})"
+      case _: SpaceStation =>
+        s"${nextBase.prettyPrint}   ${" " * (Crusader.toString.length + 5)}"
+      case _ =>
+        s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}"
+    }
+  }
+
+  def canTrade(other: Base): Boolean = {
+    this != other && buy.exists { case (material, _) =>
+      (allowIllegal || !material.isIllegal) && other.sell.contains(material)
+    }
+  }
+
+  def bestProfit(other: Base, ship: Ship, investment: Int): (Material, Int, Int) = {
+    profitToBases(this, other).map { case (material, profit) =>
+      val cost = this.buy(material)
+      val moneyBuys: Int = (investment / cost).floor.toInt min ship.cargoSizeInUnits
+      val maxStock: Int = material.maxStock.fold(moneyBuys)(_ min moneyBuys)
+      (material,  (maxStock * profit).floor.toInt, maxStock)
+    }.maxBy(_._2)
+  }
 }
 
 class LandBase(
