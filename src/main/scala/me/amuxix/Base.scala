@@ -5,24 +5,27 @@ import me.amuxix.stanton.Bases.BountyfulHarvestHydroponics
 import me.amuxix.stanton.planets.Crusader
 
 
-sealed class Base(val buy: Map[Material, Double], val sell: Map[Material, Double], val celestialBody: CelestialBody) {
+abstract class Base {
+  val buy: Map[Material, Double]
+  val sell: Map[Material, Double]
+  val celestialBody: CelestialBody
 
-  def distanceFromOrbit: Int = {
+  def distanceFromOrbit: Km = {
     this match {
-      case base: LandBase => base.distanceFromOrbitalMarker
-      case _ => 10
+      case landBase: OnLand => landBase.distanceFromOrbitalMarker
+      case _ => Km(10)
     }
   }
 
-  def distanceTo(other: Base): Int = celestialBody.atmosphere + other.distanceFromOrbit
+  def distanceTo(other: Base): Km = celestialBody.heightOfAtmosphere + other.distanceFromOrbit
 
   def prettyPrint: String = s"$this${" " * (BountyfulHarvestHydroponics.toString.length - this.toString.length)}"
 
   def prettyPrintNextJump(nextBase: Base): String = {
     nextBase match {
-      case nextBase: LandBase if this != nextBase =>
+      case nextBase: OnLand if this != nextBase =>
         s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}(${nextBase.closestOrbitalMarker})"
-      case _: SpaceStation =>
+      case _ if nextBase.celestialBody.isInstanceOf[SpaceStation] =>
         s"${nextBase.prettyPrint}   ${" " * (Crusader.toString.length + 5)}"
       case _ =>
         s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}"
@@ -45,16 +48,7 @@ sealed class Base(val buy: Map[Material, Double], val sell: Map[Material, Double
   }
 }
 
-class LandBase(
-  buy: Map[Material, Double],
-  sell: Map[Material, Double],
-  celestialBody: CelestialBody,
-  val closestOrbitalMarker: OrbitalMarker,
-  val distanceFromOrbitalMarker: Int
-) extends Base(buy, sell, celestialBody)
-
-class SpaceStation(
-  buy: Map[Material, Double],
-  sell: Map[Material, Double],
-  celestialBody: CelestialBody
-) extends Base(buy, sell, celestialBody)
+trait OnLand {
+  val closestOrbitalMarker: OrbitalMarker
+  val distanceFromOrbitalMarker: Km
+}

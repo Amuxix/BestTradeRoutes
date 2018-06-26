@@ -23,7 +23,7 @@ object BestTradeRoutes {
     }
   }
 
-  type Jump = (Base, Material, Int, Int, Int)
+  type Jump = (Base, Material, Int, Int, Km)
   val allowIllegal = false
   val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, KudreOre, TerraMillsHydroFarm,
     GaletteFamilyFarms, HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
@@ -92,7 +92,7 @@ object BestTradeRoutes {
         }
     }
     calculateAllJumpsWithMaxLookahead(startingBase, startingInvestment, Seq.empty).maxBy { jumps =>
-      val (totalProfit, totalDistance) = jumps.foldLeft((0, 0)) {
+      val (totalProfit, totalDistance) = jumps.foldLeft((0, Km(0))) {
         case ((accProfit, accDistance), (_, _, _, profit, distance)) => (accProfit + profit, accDistance + distance)
       }
       totalProfit
