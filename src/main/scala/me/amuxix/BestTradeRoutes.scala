@@ -44,33 +44,32 @@ object BestTradeRoutes {
   }
 
   def main(args: Array[String]): Unit = {
-    require(args.length == 4, "Please specify ship, initial investment, lookahead and jumps to calculate.")
+    require(args.length == 4, "Please specify ship, initial investment, investment penetration, lookahead and jumps to calculate.")
     val ship = Ship.fromString(args.head)
-    val initialInvestment = args(1).toInt
-    val lookahead = args(2).toInt
-    val maxJumps = args(3).toInt
+    val initialInvestment = args(1).toInt * 1000
+    val penetration: Float = args(2).toFloat / 100
+    val lookahead = args(3).toInt
 
-    val startingBase = PortOlisar
+    val startingBase = Levski
 
-    (1 to maxJumps).foldLeft[(Base, Int)]((startingBase, initialInvestment)){
-      case ((base, investment), _) =>
-        val (nextBase, material, unitsToBuy, profit, _) = calculateNextBestJump(base, possibleDestinations, ship, investment, lookahead)
+    val maxProfit = bases.flatMap { startingBase =>
+      possibleDestinations(startingBase).map(startingBase.bestProfit(_, ship, Int.MaxValue)._2)
+    }.max
+
+    def look(base: Base, investment: Int, previousProfits: Seq[Int]): Seq[Int] = {
+      if (previousProfits.count(_ == maxProfit) == 2) {
+        Seq.empty
+      } else {
+        val (nextBase, material, unitsToBuy, profit, _) = calculateNextBestJump(base, possibleDestinations, ship, (investment * penetration).toInt, lookahead)
         val unitsToBuyString = s"$unitsToBuy${" " * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
-        val totalProfit = investment + profit
-        println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextBase)} => $totalProfit aUEC")
-        (nextBase, totalProfit)
+        val currentInvestment = investment + profit
+        println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextBase)} => $currentInvestment(+$profit) aUEC")
+        look(nextBase, currentInvestment, previousProfits :+ profit)
+      }
     }
 
-    /*var investment = initialInvestment
-    var base: Base = startingBase
-
-    (1 to maxJumps).foreach { _ =>
-      val (nextBase, material, unitsToBuy, profit, _) = calculateNextBestJump(base, possibleDestinations, ship, investment, lookahead)
-      val unitsToBuyString = s"$unitsToBuy${" " * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
-      investment += profit
-      println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextBase)} => $investment aUEC")
-      base = nextBase
-    }*/
+    println(s"Starting at $startingBase with $initialInvestment")
+    look(startingBase, initialInvestment, Seq.empty)
   }
 
   def calculateNextBestJump(startingBase: Base, possibleDestinations: Map[Base, ParSeq[Base]], ship: Ship, startingInvestment: Int, lookahead: Int = 1): Jump = {

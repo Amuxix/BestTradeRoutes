@@ -2,7 +2,7 @@ package me.amuxix
 
 import me.amuxix.BestTradeRoutes.{allowIllegal, profitToBases}
 import me.amuxix.stanton.Bases.BountyfulHarvestHydroponics
-import me.amuxix.stanton.planets.Crusader
+import me.amuxix.stanton.planets.{Crusader, Delamar}
 
 
 abstract class Base {
@@ -23,10 +23,8 @@ abstract class Base {
 
   def prettyPrintNextJump(nextBase: Base): String = {
     nextBase match {
-      case nextBase: OnLand if this != nextBase =>
-        s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}(${nextBase.closestOrbitalMarker})"
       case _ if nextBase.celestialBody.isInstanceOf[SpaceStation] =>
-        s"${nextBase.prettyPrint}   ${" " * (Crusader.toString.length + 5)}"
+        s"${nextBase.prettyPrint}${" " * (Delamar.toString.length + 4)}"
       case _ =>
         s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}"
     }
