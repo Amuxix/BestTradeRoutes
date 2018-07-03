@@ -1,5 +1,6 @@
 package me.amuxix.stanton
 
+import me.amuxix
 import me.amuxix._
 import me.amuxix.stanton.moons.{Cellin, Daymar, Yela}
 import me.amuxix.stanton.planets.Delamar
@@ -8,28 +9,28 @@ object Bases {
   case object PortOlisar extends Base {
     override val buy: Map[Material, Double] = Map(
       Fluorine -> 2.65,
-      Gold -> 6.05,
+      Gold -> 6.06,
       AggricultureSupplies -> 0.75,
-      Waste -> 0.45,
-      MedicalSupplies -> 17.02,
+      Waste -> 0.09,
+      MedicalSupplies -> 17.44,
       Scrap -> 1.52
     )
     override val sell: Map[Material, Double] = Map(
-      Astatine -> 8.25,
+      Astatine -> 8.44,
       Hydrogen -> 0.17,
       Iodine -> 0.44,
-      Chlorine -> 1.55,
+      Chlorine -> 1.56,
       Agricium -> 25.72,
       Tungsten -> 3.94,
       Aluminum -> 1.22,
       Titanium -> 2.29,
       Quartz -> 1.46,
-      Corundum -> 2.58,
-      Diamond -> 6.8,
+      Corundum -> 2.52,
+      Diamond -> 6.78,
       Beryl -> 4.3,
-      Laranite -> 28.54,
+      Laranite -> 28.53,
       ProcessedFood -> 1.38,
-      Stims -> 3.41,
+      Stims -> 3.42,
       DistilledSpirits -> 4.95
     )
     override val celestialBody: CelestialBody = stations.PortOlisar
@@ -37,16 +38,16 @@ object Bases {
 
   case object ArcCorpMiningArea141 extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
-      Agricium -> 24.27,
-      Tungsten -> 3.65,
-      Quartz -> 1.33,
-      Beryl -> 4.09
+      Agricium -> 25.73,
+      Tungsten -> 3.8,
+      Quartz -> 1.40,
+      Beryl -> 4.1
     )
     override val sell: Map[Material, Double] = Map(
       ProcessedFood -> 1.38,
       Stims -> 3.42,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.97,
+      MedicalSupplies -> 17.02,
       Altruciatoxin -> 11.8,
       WiDoW -> 27
     )
@@ -58,12 +59,12 @@ object Bases {
   case object BountyfulHarvestHydroponics extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
       ProcessedFood -> 1.31,
-      Stims -> 3.17,
+      Stims -> 3.29,
       DistilledSpirits -> 4.64
     )
     override val sell: Map[Material, Double] = Map(
-      AggricultureSupplies -> 0.8,
-      MedicalSupplies -> 17.97
+      AggricultureSupplies -> 0.74,
+      MedicalSupplies -> 17.02
     )
     override val celestialBody: CelestialBody = Daymar
     override val closestOrbitalMarker: OrbitalMarker = OM6
@@ -72,8 +73,8 @@ object Bases {
 
   case object ShubinMiningFacility extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
-      Gold -> 5.71,
-      Tungsten -> 3.65,
+      Gold -> 6.08,
+      Tungsten -> 3.94,
       Quartz -> 1.33,
       Beryl -> 4.09
     )
@@ -81,7 +82,7 @@ object Bases {
       ProcessedFood -> 1.38,
       Stims -> 3.42,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.97,
+      MedicalSupplies -> 17.02,
       Altruciatoxin -> 11.8,
       WiDoW -> 27
     )
@@ -90,6 +91,7 @@ object Bases {
     override val distanceFromOrbitalMarker: Km = Km(351)
   }
 
+  //Gone
   case object KudreOre extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
       Agricium -> 24.27,
@@ -111,15 +113,15 @@ object Bases {
     override val distanceFromOrbitalMarker: Km = Km(377)
   }
 
-  case object TerraMillsHydroFarm extends Base with OnLand {
+  case object TerraMillsHydroFarm extends Base with OnLand  {
     override val buy: Map[Material, Double] = Map(
       ProcessedFood -> 1.31,
-      Stims -> 3.17,
+      Stims -> 3.18,
       DistilledSpirits -> 4.64
     )
     override val sell: Map[Material, Double] = Map(
       AggricultureSupplies -> 0.8,
-      MedicalSupplies -> 17.97
+      MedicalSupplies -> 17.02
     )
     override val celestialBody: CelestialBody = Cellin
     override val closestOrbitalMarker: OrbitalMarker = OM2
@@ -129,12 +131,12 @@ object Bases {
   case object GaletteFamilyFarms extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
       ProcessedFood -> 1.31,
-      Stims -> 3.17,
+      Stims -> 3.18,
       DistilledSpirits -> 4.64
     )
     override val sell: Map[Material, Double] = Map(
       AggricultureSupplies -> 0.8,
-      MedicalSupplies -> 17.97
+      MedicalSupplies -> 17.02
     )
     override val celestialBody: CelestialBody = Cellin
     override val closestOrbitalMarker: OrbitalMarker = OM1
@@ -143,13 +145,14 @@ object Bases {
 
   case object HickesResearchOutpost extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
-      AggricultureSupplies -> 0.69
+      AggricultureSupplies -> 0.80,
+      MedicalSupplies -> 17.02
     )
     override val sell: Map[Material, Double] = Map(
-      Astatine -> 8.25,
+      Astatine -> 8.44,
       Fluorine -> 2.75,
       Iodine -> 0.44,
-      Chlorine -> 1.55,
+      Chlorine -> 1.56,
       ProcessedFood -> 1.38
     )
     override val celestialBody: CelestialBody = Cellin
@@ -161,16 +164,16 @@ object Bases {
     override val buy: Map[Material, Double] = Map(
       Agricium -> 25.72,
       Aluminum -> 1.17,
-      Titanium -> 2.1,
+      Titanium -> 2.21,
       Corundum -> 2.41,
       Diamond -> 6.39,
-      Laranite -> 27.45,
+      Laranite -> 28.54,
       MedicalSupplies -> 17.02
     )
     override val sell: Map[Material, Double] = Map(
       ProcessedFood -> 1.38,
       Stims -> 3.42,
-      DistilledSpirits -> 4.95,
+      DistilledSpirits -> 4.81,
       MedicalSupplies -> 17.97,
       Altruciatoxin -> 11.8,
       WiDoW -> 27
@@ -182,26 +185,29 @@ object Bases {
 
   case object GrimHex extends Base {
     override val buy: Map[Material, Double] = Map(
-      Gold -> 5.96,
+      Gold -> 5.90,
       Diamond -> 6.8,
       Laranite -> 28.54,
-      Scrap -> 1.52
+      Scrap -> 1.52,
+      Agricium -> 25.72
     )
     override val sell: Map[Material, Double] = Map(
-      Astatine -> 8.25,
+      Astatine -> 8.44,
       Hydrogen -> 0.17,
       Fluorine -> 2.75,
       Iodine -> 0.44,
-      Chlorine -> 1.55,
-      Tungsten -> 3.95,
+      Chlorine -> 1.56,
+      Tungsten -> 3.94,
       Aluminum -> 1.22,
-      Quartz -> 1.45,
+      Titanium -> 2.29,
+      Corundum -> 2.41,
+      Quartz -> 1.46,
       Beryl -> 4.3,
       ProcessedFood -> 1.38,
-      Waste -> 0.5,
+      Waste -> 0.1,
       Stims -> 3.42,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.97,
+      MedicalSupplies -> 17.02,
       Altruciatoxin -> 11.8,
       WiDoW -> 27
     )
@@ -210,17 +216,17 @@ object Bases {
 
   case object ArcCorpMiningArea157 extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
-      Astatine -> 7.74,
-      Hydrogen -> 0.12,
-      Fluorine -> 2.54,
-      Iodine -> 0.35,
-      Chlorine -> 1.44
+      Astatine -> 8.44,
+      Hydrogen -> 0.17,
+      Fluorine -> 2.64,
+      Iodine -> 0.44,
+      Chlorine -> 1.56
     )
     override val sell: Map[Material, Double] = Map(
       ProcessedFood -> 1.38,
       Stims -> 3.42,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.97,
+      MedicalSupplies -> 17.02,
       Altruciatoxin -> 11.8,
       WiDoW -> 27
     )
@@ -231,17 +237,17 @@ object Bases {
 
   case object BensonMiningOutpost extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
-      Astatine -> 7.74,
-      Hydrogen -> 0.12,
+      Astatine -> 8.44,
+      Hydrogen -> 0.17,
       Fluorine -> 2.54,
-      Iodine -> 0.35,
+      Iodine -> 0.44,
       Chlorine -> 1.44
     )
     override val sell: Map[Material, Double] = Map(
       ProcessedFood -> 1.38,
       Stims -> 3.42,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.97,
+      MedicalSupplies -> 17.02,
       Altruciatoxin -> 11.8,
       WiDoW -> 27
     )
@@ -252,14 +258,14 @@ object Bases {
 
   case object DeakingReaserchOutpost extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
-      AggricultureSupplies -> 0.69,
+      AggricultureSupplies -> 0.80,
       MedicalSupplies -> 17.02
     )
     override val sell: Map[Material, Double] = Map(
-      Astatine -> 8.25,
+      Astatine -> 8.44,
       Fluorine -> 2.75,
       Iodine -> 0.44,
-      Chlorine -> 1.55,
+      Chlorine -> 1.56,
       ProcessedFood -> 1.38
     )
     override val celestialBody: CelestialBody = Yela
@@ -270,10 +276,10 @@ object Bases {
   case object DrugLab extends Base with OnLand {
     override val buy: Map[Material, Double] = Map(
       Altruciatoxin -> 9.79,
-      WiDoW -> 17
+      WiDoW -> 26.28
     )
     override val sell: Map[Material, Double] = Map(
-      AggricultureSupplies -> 0.8
+      AggricultureSupplies -> 0.0
     )
     override val celestialBody: CelestialBody = Yela
     override val closestOrbitalMarker: OrbitalMarker = OM4
@@ -313,4 +319,22 @@ object Bases {
     override val closestOrbitalMarker: OrbitalMarker = OM5
     override val distanceFromOrbitalMarker: Km = Km(84)
   }
+
+  /*def fromString(shipName: String): Ship = s"$shipName$$" match {
+  PortOlisar
+  ArcCorpMiningArea141
+  BountyfulHarvestHydroponics
+  ShubinMiningFacility
+  KudreOre
+  TerraMillsHydroFarm
+  GaletteFamilyFarms
+  HickesResearchOutpost
+  TramMyersMining
+  GrimHex
+  ArcCorpMiningArea157
+  BensonMiningOutpost
+  DeakingReaserchOutpost
+  DrugLab
+  Levski
+  }*/
 }

@@ -2,6 +2,7 @@ package me.amuxix
 
 import me.amuxix.stanton.Bases._
 
+import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
 
 object BestTradeRoutes {
@@ -25,13 +26,13 @@ object BestTradeRoutes {
 
   type Jump = (Base, Material, Int, Int, Km)
   val allowIllegal = false
-  val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, KudreOre, TerraMillsHydroFarm,
+  val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, /*KudreOre, */TerraMillsHydroFarm,
     GaletteFamilyFarms, HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
   val possibleDestinations: Map[Base, ParSeq[Base]] = bases.map { base =>
     base -> bases.filter(base.canTrade).par
   }.toMap
 
-  val profitToBases: Map[(Base, Base), Map[Material, Double]] = {
+  val profitToBases: Map[(Base, Base), Map[Material, Double]] =
     bases.flatMap { base =>
       bases.collect {
         case nextBase if possibleDestinations(base).exists(_ == nextBase) =>
@@ -41,7 +42,6 @@ object BestTradeRoutes {
           (base, nextBase) -> profits
       }
     }.toMap
-  }
 
   def main(args: Array[String]): Unit = {
     require(args.length == 4, "Please specify ship, initial investment, investment penetration, lookahead and jumps to calculate.")
@@ -49,19 +49,21 @@ object BestTradeRoutes {
     val initialInvestment = args(1).toInt * 1000
     val penetration: Float = args(2).toFloat / 100
     val lookahead = args(3).toInt
+    //args.drop(4).mkString("")
 
-    val startingBase = Levski
+    val startingBase = GrimHex
 
     val maxProfit = bases.flatMap { startingBase =>
       possibleDestinations(startingBase).map(startingBase.bestProfit(_, ship, Int.MaxValue)._2)
     }.max
 
+    @tailrec
     def look(base: Base, investment: Int, previousProfits: Seq[Int]): Seq[Int] = {
-      if (previousProfits.count(_ == maxProfit) == 2) {
+      if (previousProfits.contains(maxProfit)) {
         Seq.empty
       } else {
         val (nextBase, material, unitsToBuy, profit, _) = calculateNextBestJump(base, possibleDestinations, ship, (investment * penetration).toInt, lookahead)
-        val unitsToBuyString = s"$unitsToBuy${" " * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
+        val unitsToBuyString = s"$unitsToBuy${" "  * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
         val currentInvestment = investment + profit
         println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextBase)} => $currentInvestment(+$profit) aUEC")
         look(nextBase, currentInvestment, previousProfits :+ profit)
