@@ -1,10 +1,14 @@
-package me.amuxix.stanton
+package me.amuxix
 
-import me.amuxix._
 import me.amuxix.stanton.moons.{Cellin, Daymar, Yela}
-import me.amuxix.stanton.planets.Delamar
+import me.amuxix.stanton.planets.{Crusader, Delamar}
 
-object Bases {
+package object stanton {
+  val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, /*KudreOre, */TerraMillsHydroFarm,
+    GaletteFamilyFarms, HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
+
+  val celestialBodies = Seq(Crusader, Delamar, Cellin, Daymar, Yela)
+
   case object PortOlisar extends Base {
     override val buy: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.75,

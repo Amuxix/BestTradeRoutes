@@ -1,7 +1,5 @@
 package me.amuxix
 
-import me.amuxix.stanton.planets.Crusader
-
 trait Atmosphere {
   val atmosphericPressure: Earths
   val atmosphereHeight: Km
@@ -17,7 +15,7 @@ sealed trait CelestialBody {
     case _ => Km(0)
   }
 
-  def prettyPrint: String = s"$this${" " * (Crusader.toString.length - this.toString.length)}"
+  def prettyPrint: String = s"$this${" " * (CelestialBody.longestNameLength - this.toString.length)}"
 }
 
 sealed trait Satellite extends CelestialBody {
@@ -40,4 +38,9 @@ abstract class Moon extends Satellite with Gravity with Atmosphere {
 
 abstract class SpaceStation extends Satellite {
   override val celestialBody: CelestialBody
+}
+
+object CelestialBody {
+  val celestialBodies: Seq[CelestialBody with Gravity with Atmosphere] = stanton.celestialBodies
+  val longestNameLength: Int = celestialBodies.map(_.toString.length).max
 }

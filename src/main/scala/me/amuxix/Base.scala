@@ -1,9 +1,11 @@
 package me.amuxix
 
-import me.amuxix.BestTradeRoutes.{allowIllegal, profitToBases}
-import me.amuxix.stanton.Bases.BountyfulHarvestHydroponics
-import me.amuxix.stanton.planets.{Crusader, Delamar}
+import me.amuxix.BestTradeRoutes.{Trade, allowIllegal, profitToBases}
 
+object Base {
+  val bases: Seq[Base] = stanton.bases
+  val longestNameLength: Int = bases.map(_.toString.length).max
+}
 
 abstract class Base {
   val buy: Map[Material, Double]
@@ -13,18 +15,18 @@ abstract class Base {
   def distanceFromOrbit: Km = {
     this match {
       case landBase: OnLand => landBase.distanceFromOrbitalMarker
-      case _ => Km(10)
+      case _ => 10 Km
     }
   }
 
   def distanceTo(other: Base): Km = celestialBody.heightOfAtmosphere + other.distanceFromOrbit
 
-  def prettyPrint: String = s"$this${" " * (BountyfulHarvestHydroponics.toString.length - this.toString.length)}"
+  def prettyPrint: String = s"$this${" " * (Base.longestNameLength - this.toString.length)}"
 
   def prettyPrintNextJump(nextBase: Base): String = {
     nextBase match {
       case _ if nextBase.celestialBody.isInstanceOf[SpaceStation] =>
-        s"${nextBase.prettyPrint}${" " * (Delamar.toString.length + 4)}"
+        s"${nextBase.prettyPrint}${" " * (CelestialBody.longestNameLength + 3)}"
       case _ =>
         s"${nextBase.prettyPrint} @ ${nextBase.celestialBody.prettyPrint}"
     }
@@ -36,16 +38,16 @@ abstract class Base {
     }
   }
 
-  def bestProfit(other: Base, ship: Ship, investment: Int): Option[(Material, Int, Int)] = {
+  def bestProfit(other: Base, ship: Ship, investment: UEC): Option[Trade] = {
     profitToBases(this, other).collect {
       case (material, Some(profit)) =>
         val cost = this.buy(material)
-        val moneyBuys: Int = (investment / cost).floor.toInt min ship.cargoSizeInUnits
+        val moneyBuys: Int = (investment.value / cost).toInt min ship.cargoSizeInUnits
         val maxStock: Int = material.maxStock.fold(moneyBuys)(_ min moneyBuys)
-        (material,  (maxStock * profit).floor.toInt, maxStock)
+        (material,  UEC((maxStock * profit).toInt), maxStock)
     } match {
       case Seq() => None
-      case nonEmpty: Seq[(Material, Int, Int)] => Some(nonEmpty.maxBy(_._2))
+      case nonEmpty: Seq[Trade] => Some(nonEmpty.maxBy(_._2))
     }
   }
 }

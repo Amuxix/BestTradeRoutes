@@ -1,12 +1,14 @@
 package me.amuxix
 
 sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None) {
-  def prettyPrint: String = s"$this${" " * (Material.materials.map(_.toString.length).max - this.toString.length)}"
+  def prettyPrint: String = s"$this${" " * (Material.longestNameLength - this.toString.length)}"
 }
 
 object Material {
-  val materials = Seq(Astatine,   Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
+  lazy val materials = Seq(Astatine,   Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
     Diamond, Beryl, Laranite, ProcessedFood, Waste, Stims, DistilledSpirits, MedicalSupplies, Scrap, Alutruciatoxine, WiDoW)
+
+  lazy val longestNameLength: Int = materials.map(_.toString.length).max
 }
 
 case object Astatine extends Material
