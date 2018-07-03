@@ -1,7 +1,12 @@
 package me.amuxix
 
 sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None) {
-  def prettyPrint: String = s"$this${" " * (AggricultureSupplies.toString.length - this.toString.length)}"
+  def prettyPrint: String = s"$this${" " * (Material.materials.map(_.toString.length).max - this.toString.length)}"
+}
+
+object Material {
+  val materials = Seq(Astatine,   Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
+    Diamond, Beryl, Laranite, ProcessedFood, Waste, Stims, DistilledSpirits, MedicalSupplies, Scrap, Alutruciatoxine, WiDoW)
 }
 
 case object Astatine extends Material
@@ -14,7 +19,7 @@ case object Gold extends Material
 case object Tungsten extends Material
 case object Aluminum extends Material
 case object Titanium extends Material
-case object AggricultureSupplies extends Material
+case object AgricultureSupplies extends Material
 case object Quartz extends Material
 case object Corundum extends Material
 case object Diamond extends Material(maxStock = Some(4000))
@@ -26,6 +31,6 @@ case object Stims extends Material
 case object DistilledSpirits extends Material
 case object MedicalSupplies extends Material
 case object Scrap extends Material
-case object Altruciatoxin extends Material(isIllegal = true, maxStock = Some(5000))
+case object Alutruciatoxine extends Material(isIllegal = true, maxStock = Some(5000))
 case object WiDoW extends Material(isIllegal = true, maxStock = Some(1000))
 

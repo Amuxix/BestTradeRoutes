@@ -36,13 +36,17 @@ abstract class Base {
     }
   }
 
-  def bestProfit(other: Base, ship: Ship, investment: Int): (Material, Int, Int) = {
-    profitToBases(this, other).map { case (material, profit) =>
-      val cost = this.buy(material)
-      val moneyBuys: Int = (investment / cost).floor.toInt min ship.cargoSizeInUnits
-      val maxStock: Int = material.maxStock.fold(moneyBuys)(_ min moneyBuys)
-      (material,  (maxStock * profit).floor.toInt, maxStock)
-    }.maxBy(_._2)
+  def bestProfit(other: Base, ship: Ship, investment: Int): Option[(Material, Int, Int)] = {
+    profitToBases(this, other).collect {
+      case (material, Some(profit)) =>
+        val cost = this.buy(material)
+        val moneyBuys: Int = (investment / cost).floor.toInt min ship.cargoSizeInUnits
+        val maxStock: Int = material.maxStock.fold(moneyBuys)(_ min moneyBuys)
+        (material,  (maxStock * profit).floor.toInt, maxStock)
+    } match {
+      case Seq() => None
+      case nonEmpty: Seq[(Material, Int, Int)] => Some(nonEmpty.maxBy(_._2))
+    }
   }
 }
 
