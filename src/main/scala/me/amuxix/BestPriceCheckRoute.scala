@@ -3,8 +3,10 @@ package me.amuxix
 import me.amuxix.Base.bases
 import me.amuxix.stanton.DrugLab
 
+import scala.collection.parallel.ParMap
+
 object BestPriceCheckRoute {
-  type PriceCheckMap = Map[(Base, Material), Boolean]
+  type PriceCheckMap = ParMap[(Base, Material), Boolean]
 
   def main(args: Array[String]): Unit = {
     val basesToCheck = (bases diff Seq(DrugLab)).par
@@ -18,19 +20,18 @@ object BestPriceCheckRoute {
           .maxBy {
             case (_, (buyPrices, sellPrices)) => buyPrices.count(_._2) + sellPrices.count(_._2)
           }
-
         look(updatedBuyPriceCheckMap, updatedSellPriceCheckMap, previousBases :+ nextBase)
       }
     }
     val emptyBuyCheckMap: PriceCheckMap =
-      bases.flatMap { base =>
-        base.buy.map { case (material, _) =>
+      basesToCheck.flatMap { base =>
+        base.buy.collect { case (material, _) if material.isLegal =>
           (base, material) -> false
         }
       }.toMap
     val emptySellCheckMap: PriceCheckMap =
-      bases.flatMap { base =>
-        base.sell.map { case (material, _) =>
+      basesToCheck.flatMap { base =>
+        base.sell.collect { case (material, _) if material.isLegal =>
           (base, material) -> false
         }
       }.toMap
@@ -38,13 +39,13 @@ object BestPriceCheckRoute {
     println(look(emptyBuyCheckMap, emptySellCheckMap))
   }
 
-  def checkBasePrices(base: Base, buyPricesChecked: PriceCheckMap, sellPricesChecked: PriceCheckMap): (PriceCheckMap, PriceCheckMap) = {
-    val updatedBuyPrices = buyPricesChecked.map {
+  def checkBasePrices(base: Base, buyPriceCheckMap: PriceCheckMap, sellPriceCheckMap: PriceCheckMap): (PriceCheckMap, PriceCheckMap) = {
+    val updatedBuyPrices = buyPriceCheckMap.map {
       case ((`base`, material), false) if base.buy.contains(material) => (base, material) -> true
       case rest => rest
     }
 
-    val updatedSellPrices = sellPricesChecked.map {
+    val updatedSellPrices = sellPriceCheckMap.map {
       case ((`base`, material), false) if updatedBuyPrices.exists {
         case ((_, `material`), true) => true
         case _ => false

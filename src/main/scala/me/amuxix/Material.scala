@@ -2,6 +2,8 @@ package me.amuxix
 
 sealed class Material(val isIllegal: Boolean = false, val maxStock: Option[Int] = None) {
   def prettyPrint: String = s"$this${" " * (Material.longestNameLength - this.toString.length)}"
+
+  def isLegal: Boolean = !isIllegal
 }
 
 object Material {
