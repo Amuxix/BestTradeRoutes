@@ -8,8 +8,10 @@ object Base {
 }
 
 abstract class Base {
-  val buy: Map[Material, Double]
-  val sell: Map[Material, Double]
+  val buy: Map[Material, Double] //Materials you can buy at this base
+  lazy val sold: Set[Material] = buy.keySet.filter(BestPriceCheckRoute.materialFilter)
+  val sell: Map[Material, Double] //materials you can sell at this base
+  lazy val bought: Set[Material] = sell.keySet.filter(BestPriceCheckRoute.materialFilter)
   val celestialBody: CelestialBody
 
   def distanceFromOrbit: Km = {
