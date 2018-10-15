@@ -6,15 +6,23 @@ package object amuxix {
     * This value class represents the atmospheric pressure in relation to earths as a multiplier.
     * So a celestial body with an atmospheric pressure of 2 Earths would have twice the atmospheric pressure
     */
-  case class Earths(value: Double) extends AnyVal
+  implicit class Earths(val value: Double) extends AnyVal {
+    def Earths: Earths = new Earths(value)
+  }
 
   implicit class G(val value: Double) extends AnyVal {
     def G: G = new G(value)
   }
 
-  implicit class Km(val value: Int) extends AnyVal {
+  implicit class Km(val value: Int) extends AnyVal with Ordered[Km] {
     def +(other: Km): Km = new Km(value + other.value)
     def Km: Km = new Km(value)
+
+    override def compare(that: Km): Int = value - that.value
+  }
+
+  object Km {
+    def unapply(arg: Km): Option[Int] = Some(arg.value)
   }
 
   implicit class UEC(val value: Int) extends AnyVal with Ordered[UEC] {

@@ -1,8 +1,9 @@
 package me.amuxix.stanton.stations
 
-import me.amuxix.{CelestialBody, SpaceStation}
 import me.amuxix.stanton.planets.Crusader
+import me.amuxix.{Base, CelestialBody, SpaceStation, stanton}
 
-object PortOlisar extends SpaceStation {
-  override val celestialBody: CelestialBody = Crusader
+case object PortOlisar extends SpaceStation {
+  override val orbits: Option[CelestialBody] = Some(Crusader)
+  override val bases: Set[Base] = Set(stanton.PortOlisar)
 }
