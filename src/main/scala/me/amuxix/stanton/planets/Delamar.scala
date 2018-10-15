@@ -1,11 +1,13 @@
 package me.amuxix.stanton.planets
 
-import me.amuxix.{Earths, G, Km, Planet}
-import me.amuxix.stanton.moons.{Cellin, Daymar, Yela}
+import me.amuxix._
+import me.amuxix.stanton.{Levski, Stanton}
 
 case object Delamar extends Planet {
-  override val gravity = G(0)
-  override val atmosphericPressure = Earths(0)
-  override val atmosphereHeight = Km(7)
-  override val satellites = Seq.empty
+  override val gravity: G = 0 G
+  override val atmosphericPressure: Earths = 0 Earths
+  override val atmosphereHeight: Km = 7 Km
+  override val orbits: Option[CelestialBody] = Some(Stanton)
+  override val orbitedBy: Set[CelestialBody] = Set.empty
+  override val bases: Set[Base] = Set(Levski)
 }

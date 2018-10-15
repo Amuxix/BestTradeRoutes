@@ -1,101 +1,93 @@
 package me.amuxix
 
-import me.amuxix.stanton.Bases._
+import me.amuxix.Base.tradingPosts
+import me.amuxix.Material.materials
+import me.amuxix.stanton.GrimHex
 
+import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
 
 object BestTradeRoutes {
-  implicit class ExtendedDouble(x: Double) {
-    def truncated(n: Int): Double = {
-      def p10(n: Int, pow: Long = 10): Long = if (n == 1) pow else p10(n - 1, pow * 10)
-
-      if (n < 0) {
-        val m = p10(-n).toDouble
-        math.round(x / m) * m
-      } else {
-        val m = p10(n).toDouble
-        math.round(x * m) / m
-      }
-    }
-
-    def toPercent: String = {
-      s"${(x * 100).truncated(2)}%"
-    }
-  }
-
-  type Jump = (Base, Material, Int, Int, Km)
+  type Trade = (Material, UEC, Int)
+  type Jump = (TradingPost, Km, Option[Trade])
   val allowIllegal = false
-  val bases: Seq[Base] = Seq(PortOlisar, ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility, KudreOre, TerraMillsHydroFarm,
-    GaletteFamilyFarms, HickesResearchOutpost, TramMyersMining, GrimHex, ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab, Levski)
-  val possibleDestinations: Map[Base, ParSeq[Base]] = bases.map { base =>
-    base -> bases.filter(base.canTrade).par
+
+  val possibleDestinations: Map[TradingPost, ParSeq[TradingPost]] = tradingPosts.map { tradingPost =>
+    tradingPost -> tradingPosts.filter(tradingPost.canTrade).toSeq.par
   }.toMap
 
-  val profitToBases: Map[(Base, Base), Map[Material, Double]] = {
-    bases.flatMap { base =>
-      bases.collect {
-        case nextBase if possibleDestinations(base).exists(_ == nextBase) =>
-          val profits = base.buy.collect { case (material, cost) if nextBase.sell.contains(material) =>
-            material -> (nextBase.sell(material) - cost)
-          }
-          (base, nextBase) -> profits
+  val profitToTradingPosts: Map[(TradingPost, TradingPost), Seq[(Material, Option[Double])]] =
+    tradingPosts.flatMap { base =>
+      tradingPosts.map { nextTradingPost =>
+        val profits: Seq[(Material, Option[Double])] = materials.map {
+          case material if base.buy.contains(material) && nextTradingPost.sell.contains(material) =>
+            (material, Some(nextTradingPost.sell(material) - base.buy(material)))
+          case material =>
+            (material, None)
+        }
+        (base, nextTradingPost) -> profits
       }
     }.toMap
-  }
 
   def main(args: Array[String]): Unit = {
-    require(args.length == 2, "Please specify ship and initial investment.")
+    require(args.length == 4, "Please specify ship, initial investment, investment penetration, lookahead and jumps to calculate.")
     val ship = Ship.fromString(args.head)
-    val initialInvestment = args(1).toInt
+    val initialInvestment: UEC = UEC(args(1).toInt * 1000)
+    val penetration: Double = args(2).toDouble / 100
+    val lookahead = args(3).toInt
+    //args.drop(4).mkString("")
 
-    val startingBase = PortOlisar
-    val lookahead = 7
-    val maxJumps = 100
+    val startingTradingPost = GrimHex
+    val maxProfit = tradingPosts.flatMap { startingTradingPost =>
+      possibleDestinations(startingTradingPost).flatMap(startingTradingPost.bestProfit(_, ship, Int.MaxValue UEC))
+    }.foldLeft(UEC(0)){ case (acc, (_, profit,_ )) => acc max profit }
 
-    val strings = (20 to (maxJumps, 10)).par.map { jumps =>
-      s"Jumps: $jumps => " +
-        (1 to lookahead).flatMap { looking =>
-          var investment = initialInvestment
-          var base: Base = startingBase
-            (1 to jumps).flatMap { current =>
-              val (nextBase, material, unitsToBuy, profit, _) = calculateNextBestJump(base, possibleDestinations, ship, investment, looking)
-              //val unitsToBuyString = s"$unitsToBuy${" " * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
-              investment += profit
-              //val string = s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextBase)} => $investment aUEC"
-              base = nextBase
-              //string
-              if (current == jumps) {
-                Some((looking, investment))
-              } else {
-                None
-              }
-            }
+    @tailrec
+    def look(base: TradingPost, investment: UEC, previousProfits: Seq[UEC]): Seq[Int] = {
+      if (previousProfits.contains(maxProfit)) {
+        Seq.empty
+      } else {
+        val (nextTradingPost, _, trade) = calculateNextBestJump(base, possibleDestinations, ship, investment * penetration, lookahead)
+        trade match {
+          case Some((material, profit, unitsToBuy)) =>
+            val unitsToBuyString = s"$unitsToBuy${" "  * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
+            val currentInvestment = investment + profit
+            println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextTradingPost)} => $currentInvestment(+$profit) aUEC")
+            look(nextTradingPost, currentInvestment, previousProfits :+ profit)
+          case None =>
+            println(s"Nothing${" " * (Material.longestNameLength - 4 + ship.cargoSizeInUnits.toString.length)} -> ${base.prettyPrintNextJump(nextTradingPost)} => $investment(+0) aUEC")
+            look(nextTradingPost, investment, previousProfits)
         }
-          .sortBy(_._2)(Ordering[Int].reverse)
-          .map(_._1)
-          .mkString(", ")
-    }.mkString("\n")
-    print(strings)
+
+      }
+    }
+
+    println(s"Starting at $startingTradingPost with $initialInvestment")
+    look(startingTradingPost, initialInvestment, Seq.empty)
   }
 
-  def calculateNextBestJump(startingBase: Base, possibleDestinations: Map[Base, ParSeq[Base]], ship: Ship, startingInvestment: Int, lookahead: Int = 1): Jump = {
-    def calculateAllJumpsWithMaxLookahead(currentBase: Base, investment: Int, jumps: Seq[Jump]): ParSeq[Seq[Jump]] = {
-      possibleDestinations(currentBase)
-        .flatMap { nextBase =>
-          val (material, profit, unitsToBuy) = currentBase.bestProfit(nextBase, ship, investment)
-          val allJumps: Seq[Jump] = jumps :+ (nextBase, material, unitsToBuy, profit, currentBase.distanceTo(nextBase))
+  def calculateNextBestJump(startingTradingPost: TradingPost, possibleDestinations: Map[TradingPost, ParSeq[TradingPost]], ship: Ship, startingInvestment: UEC, lookahead: Int = 1): Jump = {
+    def calculateAllJumpsWithMaxLookahead(currentTradingPost: TradingPost, investment: UEC, jumps: Seq[Jump]): ParSeq[Seq[Jump]] = {
+      possibleDestinations(currentTradingPost)
+        .flatMap { nextTradingPost =>
+          val trade: Option[Trade] = currentTradingPost.bestProfit(nextTradingPost, ship, investment)
+          val allJumps: Seq[Jump] = jumps :+ (nextTradingPost, currentTradingPost.distanceTo(nextTradingPost), trade)
           if (allJumps.size == lookahead) {
             Seq(allJumps)
           } else {
-            calculateAllJumpsWithMaxLookahead(nextBase, investment + profit, allJumps)
+            val profit = trade match {
+              case Some((_, profit, _)) => profit
+              case None => 0 UEC
+            }
+            calculateAllJumpsWithMaxLookahead(nextTradingPost, investment + profit, allJumps)
           }
         }
     }
-    calculateAllJumpsWithMaxLookahead(startingBase, startingInvestment, Seq.empty).maxBy { jumps =>
-      val (totalProfit, totalDistance) = jumps.foldLeft((0, Km(0))) {
-        case ((accProfit, accDistance), (_, _, _, profit, distance)) => (accProfit + profit, accDistance + distance)
+    calculateAllJumpsWithMaxLookahead(startingTradingPost, startingInvestment, Seq.empty).maxBy { jumps =>
+      jumps.foldLeft(UEC(0)) {
+        case (accProfit, (_, _, Some((_, profit, _)))) => accProfit + profit
+        case (accProfit, (_, _, None)) => accProfit
       }
-      totalProfit
     }.head
   }
 }
