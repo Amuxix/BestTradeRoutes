@@ -9,7 +9,7 @@ sealed trait Gravity {
   val gravity: G
 }
 
-sealed abstract class CelestialBody extends Chart {
+sealed abstract class CelestialBody extends Charted {
   val orbits: Option[CelestialBody]
   val orbitedBy: Set[CelestialBody]
   val bases: Set[Base]
@@ -19,7 +19,11 @@ sealed abstract class CelestialBody extends Chart {
 
   def isOrbitedBy(celestialBody: CelestialBody): Boolean = orbitedBy.contains(celestialBody)
 
-  lazy val ancestors: Seq[CelestialBody] = orbits.fold(Seq(this))(parent => this +: parent.ancestors)
+  /**
+    * This is the list of body about which this body rotates going from closest to furthest.
+    * In the case of the Moon, this list would be Earth, Sun, Milky Way, etc
+    */
+  lazy val parentOrbits: Seq[CelestialBody] = orbits.fold(Seq(this))(parent => this +: parent.parentOrbits)
 
   def heightOfAtmosphere: Km = this match {
     case hasAtmosphere: Atmosphere => hasAtmosphere.atmosphereHeight

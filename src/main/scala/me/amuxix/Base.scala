@@ -8,16 +8,19 @@ object Base {
 }
 
 abstract class Base {
+  /**
+    * The celestial body where this base is located.
+    */
   val celestialBody: CelestialBody
 
   def distanceFromOrbit: Km = {
-    this match {
-      case _: OnLand => 50 Km
-      case _ => 10 Km
+    celestialBody match {
+      case _: SpaceStation => 10 Km
+      case _ => 50 Km
     }
   }
 
-  lazy val ancestors: Seq[CelestialBody] = celestialBody.ancestors
+  lazy val parentOrbits: Seq[CelestialBody] = celestialBody.parentOrbits
 
   def distanceTo(other: Base): Km =
     if (this == other) {
@@ -25,18 +28,18 @@ abstract class Base {
     } else {
       if (celestialBody == other.celestialBody) {
         celestialBody.heightOfAtmosphere + other.distanceFromOrbit
-      } else if (celestialBody.orbits.contains(other.celestialBody)) {
+      } else if (celestialBody.orbits(other.celestialBody)) {
         // The celestial body where this base is located orbits the celestial body where the other base is located
         celestialBody.heightOfAtmosphere + other.distanceFromOrbit + 1000
-      } else if (other.celestialBody.orbits.contains(celestialBody)) {
+      } else if (other.celestialBody.orbits(celestialBody)) {
         // The celestial body where the other base is located orbits the celestial body where this base is located
         other.celestialBody.heightOfAtmosphere + distanceFromOrbit + 1000
       } else {
         (for {
-          lowestCommonAncestor <- ancestors.find(other.ancestors.contains)
+          lowestCommonAncestor <- parentOrbits.find(other.parentOrbits.contains)
           lowestCommonAncestorChildren = lowestCommonAncestor.orbitedBy
-          nearestAncestorOfThis <- ancestors.find(lowestCommonAncestorChildren.contains)
-          nearestAncestorOfOther <- other.ancestors.find(lowestCommonAncestorChildren.contains)
+          nearestAncestorOfThis <- parentOrbits.find(lowestCommonAncestorChildren.contains)
+          nearestAncestorOfOther <- other.parentOrbits.find(lowestCommonAncestorChildren.contains)
         } yield lowestCommonAncestor.distance(nearestAncestorOfThis, nearestAncestorOfOther))
           .getOrElse(throw new Exception(s"Cannot calculate distance from $this to $other"))
       }
@@ -56,11 +59,14 @@ abstract class Base {
   }
 }
 
+/**
+  * This represents a base that has a trade terminal that can buy and/or sell materials.
+  */
 abstract class TradingPost extends Base {
   val buy: Map[Material, Double] //Materials you can buy at this base
-  lazy val sold: Set[Material] = buy.keySet.filter(BestPriceCheckRoute.materialFilter)
+  lazy val sold: Set[Material] = buy.keySet.filter(_.isIllegal && allowIllegal)
   val sell: Map[Material, Double] //materials you can sell at this base
-  lazy val bought: Set[Material] = sell.keySet.filter(BestPriceCheckRoute.materialFilter)
+  lazy val bought: Set[Material] = sell.keySet.filter(_.isIllegal && allowIllegal)
 
   def canTrade(other: TradingPost): Boolean = {
     this != other && buy.exists { case (material, _) =>
@@ -81,5 +87,3 @@ abstract class TradingPost extends Base {
     }
   }
 }
-
-trait OnLand

@@ -37,7 +37,7 @@ package object stanton {
     )
   }
 
-  case object ArcCorpMiningArea141 extends TradingPost with OnLand {
+  case object ArcCorpMiningArea141 extends TradingPost {
     override val celestialBody: CelestialBody = Daymar
     override val buy: Map[Material, Double] = Map(
       Agricium -> 25.04,
@@ -55,7 +55,7 @@ package object stanton {
     )
   }
 
-  case object BountyfulHarvestHydroponics extends TradingPost with OnLand {
+  case object BountyfulHarvestHydroponics extends TradingPost {
     override val celestialBody: CelestialBody = Daymar
     override val buy: Map[Material, Double] = Map(
       DistilledSpirits -> 4.64,
@@ -68,7 +68,7 @@ package object stanton {
     )
   }
 
-  case object ShubinMiningFacility extends TradingPost with OnLand {
+  case object ShubinMiningFacility extends TradingPost {
     override val celestialBody: CelestialBody = Daymar
     override val buy: Map[Material, Double] = Map(
       Beryl -> 4.09,
@@ -86,7 +86,7 @@ package object stanton {
     )
   }
 
-  case object TerraMillsHydroFarm extends TradingPost with OnLand  {
+  case object TerraMillsHydroFarm extends TradingPost  {
     override val celestialBody: CelestialBody = Cellin
     override val buy: Map[Material, Double] = Map(
       DistilledSpirits -> 4.64,
@@ -99,7 +99,7 @@ package object stanton {
     )
   }
 
-  case object GaletteFamilyFarms extends TradingPost with OnLand {
+  case object GaletteFamilyFarms extends TradingPost {
     override val celestialBody: CelestialBody = Cellin
     override val buy: Map[Material, Double] = Map(
       DistilledSpirits -> 4.64,
@@ -112,7 +112,7 @@ package object stanton {
     )
   }
 
-  case object HickesResearchOutpost extends TradingPost with OnLand {
+  case object HickesResearchOutpost extends TradingPost {
     override val celestialBody: CelestialBody = Cellin
     override val buy: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.69,
@@ -127,7 +127,7 @@ package object stanton {
     )
   }
 
-  case object TramMyersMining extends TradingPost with OnLand {
+  case object TramMyersMining extends TradingPost {
     override val celestialBody: CelestialBody = Cellin
     override val buy: Map[Material, Double] = Map(
       Aluminum -> 1.17,
@@ -177,7 +177,7 @@ package object stanton {
     )
   }
 
-  case object ArcCorpMiningArea157 extends TradingPost with OnLand {
+  case object ArcCorpMiningArea157 extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
       Astatine -> 8.44,
@@ -196,7 +196,7 @@ package object stanton {
     )
   }
 
-  case object BensonMiningOutpost extends TradingPost with OnLand {
+  case object BensonMiningOutpost extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
       Astatine -> 8.17,
@@ -215,7 +215,7 @@ package object stanton {
     )
   }
 
-  case object DeakingReaserchOutpost extends TradingPost with OnLand {
+  case object DeakingReaserchOutpost extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.69,
@@ -230,7 +230,7 @@ package object stanton {
     )
   }
 
-  case object DrugLab extends TradingPost with OnLand {
+  case object DrugLab extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
       Alutruciatoxine -> 10.77,
@@ -241,7 +241,7 @@ package object stanton {
     )
   }
 
-  case object Levski extends TradingPost with OnLand {
+  case object Levski extends TradingPost {
     override val celestialBody: CelestialBody = Delamar
     override val buy: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.8,

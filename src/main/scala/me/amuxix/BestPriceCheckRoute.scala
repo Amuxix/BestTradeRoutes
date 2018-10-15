@@ -12,7 +12,6 @@ object BestPriceCheckRoute {
   val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
     prices + tradingPost.sold.size + tradingPost.bought.size
   )
-  def materialFilter(material: Material): Boolean = material.isLegal
 
   def main(args: Array[String]): Unit = {
     var bestRouteSize = totalPrices * 2
