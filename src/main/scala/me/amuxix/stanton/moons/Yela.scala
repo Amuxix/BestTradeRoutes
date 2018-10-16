@@ -12,4 +12,5 @@ case object Yela extends Moon {
   override val orbits: Option[CelestialBody] = Some(Crusader)
   override val orbitedBy: Set[CelestialBody] = Set(GrimHex)
   override val bases: Set[Base] = Set(ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab)
+  override val equatorialRadius: Km = 313 Km
 }

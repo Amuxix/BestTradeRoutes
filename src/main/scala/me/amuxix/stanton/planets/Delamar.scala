@@ -10,4 +10,5 @@ case object Delamar extends Planet {
   override val orbits: Option[CelestialBody] = Some(Stanton)
   override val orbitedBy: Set[CelestialBody] = Set.empty
   override val bases: Set[Base] = Set(Levski)
+  override val equatorialRadius: Km = 75 Km
 }

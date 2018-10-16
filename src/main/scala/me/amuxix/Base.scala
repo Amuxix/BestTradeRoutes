@@ -18,7 +18,7 @@ abstract class Base {
   def distanceFromOrbit: Km = {
     celestialBody match {
       case _: SpaceStation => 10 Km
-      case _ => 50 Km
+      case _ => 60 Km
     }
   }
 
@@ -99,4 +99,8 @@ abstract class TradingPost extends Base {
       case (previous, _) => previous
     }
   }
+}
+
+trait LandingPad {
+  val size: Size
 }

@@ -9,6 +9,10 @@ sealed trait Gravity {
   val gravity: G
 }
 
+sealed trait RelevantDimensions {
+  val equatorialRadius: Km
+}
+
 sealed abstract class CelestialBody extends Charted {
   val orbits: Option[CelestialBody]
   val orbitedBy: Set[CelestialBody]
@@ -43,11 +47,11 @@ abstract class MassiveBody extends CelestialBody {
   override val bases: Set[Base] = Set.empty
 }
 
-abstract class Planet extends CelestialBody with Gravity with Atmosphere
+abstract class Planet extends CelestialBody with Gravity with Atmosphere with RelevantDimensions
 
 sealed abstract class Satellite extends CelestialBody
 
-abstract class Moon extends Satellite with Gravity with Atmosphere
+abstract class Moon extends Satellite with Gravity with Atmosphere with RelevantDimensions
 
 abstract class SpaceStation extends Satellite {
   override val orbitedBy: Set[CelestialBody] = Set.empty

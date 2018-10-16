@@ -11,4 +11,5 @@ case object Daymar extends Moon {
   override val orbits: Option[CelestialBody] = Some(Crusader)
   override val orbitedBy: Set[CelestialBody] = Set.empty
   override val bases: Set[Base] = Set(ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility)
+  override val equatorialRadius: Km = 295 Km
 }

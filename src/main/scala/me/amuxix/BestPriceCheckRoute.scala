@@ -7,11 +7,12 @@ import scala.language.postfixOps
 
 object BestPriceCheckRoute {
   type PriceCheckMap = Map[TradingPost, Set[Material]]
+  type Jump = (TradingPost, Set[Material])
 
   val tradingPostsToCheck: Seq[TradingPost] = tradingPosts.toSeq.sortBy(tradingPost => (tradingPost.bought.size, -tradingPost.sold.size))
-  val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
+  val totalPrices: Int = tradingPostsToCheck.foldLeft(0) { (prices, tradingPost) =>
     prices + tradingPost.sold.size + tradingPost.bought.size
-  )
+  }
 
   val startingBase: TradingPost = GrimHex
   val knownBases: Seq[TradingPost] = Seq(BountyfulHarvestHydroponics, TerraMillsHydroFarm, GaletteFamilyFarms, HickesResearchOutpost,
@@ -27,20 +28,22 @@ object BestPriceCheckRoute {
       */
     val theoreticalRouteMinimum = tradingPostsToCheck.size + (if (existsTradingPostThatBuysNothing) 0 else 1)
 
-
-    def look(buyPriceCheckMap: PriceCheckMap, sellPriceCheckMap: PriceCheckMap, materialsInHull: Set[Material], pricesChecked: Int, previousTradingPosts: Seq[TradingPost], distanceTraveled: Km): Any = {
+    def look(buyPriceCheckMap: PriceCheckMap, sellPriceCheckMap: PriceCheckMap, materialsInHull: Set[Material], pricesChecked: Int, previousJumps: Seq[Jump], distanceTraveled: Km): Any = {
       if (pricesChecked == totalPrices && distanceTraveled < bestRouteTotalDistance) {
-        bestRouteSize = previousTradingPosts.size
+        bestRouteSize = previousJumps.size
         bestRouteTotalDistance = distanceTraveled
-        println(s"$bestRouteSize, ${bestRouteTotalDistance.value} -> ${previousTradingPosts.map(tradingPost => s"$tradingPost(${tradingPost.celestialBody.toString})").mkString(", ")}")
-      } else if (previousTradingPosts.size < bestRouteSize) {
+        println(s"$bestRouteSize, ${bestRouteTotalDistance.value}\n${previousJumps.map { case (tradingPost, materialsToBuy) =>
+          s"$tradingPost(${tradingPost.celestialBody.toString})${if (materialsToBuy.nonEmpty) " -> " else ""}${materialsToBuy.mkString(", ")}"
+        }.mkString("", "\n", "\n")}")
+      } else if (previousJumps.size < bestRouteSize) {
         // If the number of trading posts visited is bestRouteSize - 1 and we still need to check more prices this solution will not be better than one we already have.
         tradingPostsToCheck.collect {
-          case tradingPost if previousTradingPosts.count(_ == tradingPost) <= 2 && (distanceTraveled + previousTradingPosts.last.distanceTo(tradingPost)) < bestRouteTotalDistance => // At most we only need to visit a trading post twice
-            val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) = updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, materialsInHull)
-            if (updatedPricesChecked > pricesChecked || updatedMaterialsInHull.size > materialsInHull.size) { //Discard trading posts that give no new prices or materials.
-              look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, previousTradingPosts :+ tradingPost, distanceTraveled + previousTradingPosts.last.distanceTo(tradingPost))
-            }
+          case tradingPost if previousJumps.count(_ == tradingPost) <= 2 &&
+            (distanceTraveled + previousJumps.last._1.distanceTo(tradingPost)) < bestRouteTotalDistance => // At most we only need to visit a trading post twice
+              val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) = updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, materialsInHull)
+              if (updatedPricesChecked > pricesChecked || updatedMaterialsInHull.size > materialsInHull.size) { //Discard trading posts that give no new prices or materials.
+                look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, previousJumps :+ (tradingPost, tradingPost.sold.diff(materialsInHull)), distanceTraveled + previousJumps.last._1.distanceTo(tradingPost))
+              }
         }
       }
     }

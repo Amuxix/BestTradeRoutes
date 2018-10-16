@@ -23,8 +23,10 @@ object Ship {
   }
 }
 
-sealed class Ship(shipCargoSize: Int, speed: Int) {
+sealed class Ship(val shipCargoSize: Int, val speed: Int, size: Size = Medium) {
   val cargoSizeInUnits: Int = shipCargoSize * 100
+  val calibrationPlusDriveSpoolTime = 4
+  val quantumDriveSpeed = 6e7 //This is .2 c (the speed of light)
 }
 
 

@@ -11,4 +11,5 @@ case object Cellin extends Moon {
   override val orbits: Option[CelestialBody] = Some(Crusader)
   override val orbitedBy: Set[CelestialBody] = Set.empty
   override val bases: Set[Base] = Set(TerraMillsHydroFarm, HickesResearchOutpost, TramMyersMining)
+  override val equatorialRadius: Km = 260 Km
 }
