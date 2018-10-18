@@ -1,5 +1,7 @@
 package me.amuxix
 
+import me.amuxix.stanton.StantonSystem
+
 sealed trait Atmosphere {
   val atmosphericPressure: Earths
   val atmosphereHeight: Km
@@ -9,25 +11,46 @@ sealed trait Gravity {
   val gravity: G
 }
 
-sealed trait RelevantDimensions {
-  val equatorialRadius: Km
-}
-
-sealed abstract class CelestialBody extends Charted {
+trait Orbits {
   val orbits: Option[CelestialBody]
-  val orbitedBy: Set[CelestialBody]
-  val bases: Set[Base]
-  lazy val orbitsToCenterOfUniverse: Int = orbits.fold(0)(_.orbitsToCenterOfUniverse + 1)
-
-  def orbits(celestialBody: CelestialBody): Boolean = orbits.contains(celestialBody)
-
-  def isOrbitedBy(celestialBody: CelestialBody): Boolean = orbitedBy.contains(celestialBody)
 
   /**
-    * This is the list of body about which this body rotates going from closest to furthest.
-    * In the case of the Moon, this list would be Earth, Sun, Milky Way, etc
+    * These arguments define the shape and size of the orbital ellipse
     */
-  lazy val parentOrbits: Seq[CelestialBody] = orbits.fold(Seq(this))(parent => this +: parent.parentOrbits)
+  val periapsis: AU
+  val apoapsis: AU
+  lazy val semimajorAxis: AU = (periapsis + apoapsis) / AU(2)
+  val eccentricity: Double
+
+  /**
+    * These arguments define the orientation of the orbital plane.
+    */
+  val inclination: Double
+  val ascendingNodeAngle: Double
+  val periapsisAngle: Double
+
+  /**
+    * Position at start of time.
+    * Currently since planets do not rotate this is considered the planets position.
+    */
+  val trueAnomaly: Double
+
+  def orbits(celestialBody: CelestialBody): Boolean = orbits.contains(celestialBody)
+}
+
+trait Inhabited {
+  val bases: Set[Base]
+  lazy val tradingPosts: Set[TradingPost] = bases.collect {
+    case tradingPost: TradingPost => tradingPost
+  }
+}
+
+sealed abstract class CelestialBody {
+  val system: System
+  val orbitedBy: Set[CelestialBody with Orbits]
+  val equatorialRadius: Km
+
+  def isOrbitedBy(celestialBody: CelestialBody): Boolean = orbitedBy.contains(celestialBody)
 
   def heightOfAtmosphere: Km = this match {
     case hasAtmosphere: Atmosphere => hasAtmosphere.atmosphereHeight
@@ -35,29 +58,21 @@ sealed abstract class CelestialBody extends Charted {
   }
 
   def prettyPrint: String = s"$this${" " * (CelestialBody.longestNameLength - this.toString.length)}"
-
-  def maxNestedOrbits(orbits: Int = 0) : Int = orbitedBy.map(_.maxNestedOrbits(orbits + 1)).max
 }
 
-/**
-  * This represents a celestial body with considerable gravity.
-  * It can be a gas giant, a sun or even a black hole
-  */
-abstract class MassiveBody extends CelestialBody {
-  override val bases: Set[Base] = Set.empty
-}
+abstract class Star extends CelestialBody
 
-abstract class Planet extends CelestialBody with Gravity with Atmosphere with RelevantDimensions
+abstract class Planet extends CelestialBody with Gravity with Atmosphere  with Orbits
 
-sealed abstract class Satellite extends CelestialBody
+sealed abstract class Satellite extends CelestialBody with Orbits
 
-abstract class Moon extends Satellite with Gravity with Atmosphere with RelevantDimensions
+abstract class Moon extends Satellite with Gravity with Atmosphere
 
 abstract class SpaceStation extends Satellite {
-  override val orbitedBy: Set[CelestialBody] = Set.empty
+  override val orbitedBy: Set[CelestialBody with Orbits] = Set.empty
 }
 
 object CelestialBody {
-  val celestialBodies: Set[CelestialBody] = stanton.celestialBodies
+  val celestialBodies: Set[CelestialBody] = StantonSystem.celestialBodies
   val longestNameLength: Int = celestialBodies.map(_.toString.length).max
 }

@@ -36,9 +36,14 @@ package object amuxix {
     override def toString: String = value.toString
   }
 
-  /*case class AU(value: Int) extends AnyVal {
-    //def toKilometers: Long = 1495978707 * 100 * value
-  }*/
+  case class AU(value: Double) extends AnyVal {
+    def toKilometers: Km = (value * 149597870.7).round.toInt Km
+    def AU: AU = new AU(value)
+    def +(other: AU): AU = new AU(value + other.value)
+    def -(other: AU): AU = new AU(value - other.value)
+    def *(other: AU): AU = new AU(value * other.value)
+    def /(other: AU): AU = new AU(value / other.value)
+  }
 
   implicit class ExtendedDouble(x: Double) {
     def truncated(n: Int): Double = {
