@@ -50,7 +50,7 @@ sealed abstract class CelestialBody {
   val orbitedBy: Set[CelestialBody with Orbits]
   val equatorialRadius: Km
 
-  def isOrbitedBy(celestialBody: CelestialBody): Boolean = orbitedBy.contains(celestialBody)
+  def isOrbitedBy(celestialBody: CelestialBody with Orbits): Boolean = orbitedBy.contains(celestialBody)
 
   def heightOfAtmosphere: Km = this match {
     case hasAtmosphere: Atmosphere => hasAtmosphere.atmosphereHeight
