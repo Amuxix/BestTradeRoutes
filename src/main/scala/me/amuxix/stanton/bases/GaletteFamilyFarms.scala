@@ -1,7 +1,7 @@
 package me.amuxix.stanton.bases
 
-import me.amuxix.{AgricultureSupplies, CelestialBody, DistilledSpirits, Material, MedicalSupplies, ProcessedFood, Stims, TradingPost}
 import me.amuxix.stanton.moons.Cellin
+import me.amuxix.{AgricultureSupplies, CelestialBody, DistilledSpirits, Material, MedicalSupplies, ProcessedFood, Stims, TradingPost}
 
 case object GaletteFamilyFarms extends TradingPost {
   override val celestialBody: CelestialBody = Cellin
@@ -12,6 +12,6 @@ case object GaletteFamilyFarms extends TradingPost {
   )
   override val sell: Map[Material, Double] = Map(
     AgricultureSupplies -> 0.8,
-    MedicalSupplies -> 17.65
+    MedicalSupplies -> 17.72
   )
 }

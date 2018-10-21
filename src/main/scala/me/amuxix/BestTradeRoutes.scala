@@ -2,7 +2,7 @@ package me.amuxix
 
 import me.amuxix.Base.tradingPosts
 import me.amuxix.Material.materials
-import me.amuxix.stanton._
+import me.amuxix.stanton.bases.PortOlisar
 
 import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
