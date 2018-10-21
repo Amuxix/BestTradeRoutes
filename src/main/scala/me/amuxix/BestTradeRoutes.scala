@@ -2,15 +2,15 @@ package me.amuxix
 
 import me.amuxix.Base.tradingPosts
 import me.amuxix.Material.materials
-import me.amuxix.stanton.GrimHex
+import me.amuxix.stanton._
 
 import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
+import scala.language.postfixOps
 
 object BestTradeRoutes {
   type Trade = (Material, UEC, Int)
   type Jump = (TradingPost, Km, Option[Trade])
-  val allowIllegal = false
 
   val possibleDestinations: Map[TradingPost, ParSeq[TradingPost]] = tradingPosts.map { tradingPost =>
     tradingPost -> tradingPosts.filter(tradingPost.canTrade).toSeq.par
@@ -30,40 +30,37 @@ object BestTradeRoutes {
     }.toMap
 
   def main(args: Array[String]): Unit = {
-    require(args.length == 4, "Please specify ship, initial investment, investment penetration, lookahead and jumps to calculate.")
+    require(args.length == 4, "Please specify ship, initial investment, investment penetration and lookahead.")
     val ship = Ship.fromString(args.head)
-    val initialInvestment: UEC = UEC(args(1).toInt * 1000)
+    val initialInvestment: UEC = UEC((args(1).toDouble * 1000).toInt)
     val penetration: Double = args(2).toDouble / 100
     val lookahead = args(3).toInt
-    //args.drop(4).mkString("")
 
-    val startingTradingPost = GrimHex
+    val startingTradingPost = PortOlisar
+
     val maxProfit = tradingPosts.flatMap { startingTradingPost =>
       possibleDestinations(startingTradingPost).flatMap(startingTradingPost.bestProfit(_, ship, Int.MaxValue UEC))
     }.foldLeft(UEC(0)){ case (acc, (_, profit,_ )) => acc max profit }
 
     @tailrec
-    def look(base: TradingPost, investment: UEC, previousProfits: Seq[UEC]): Seq[Int] = {
-      if (previousProfits.contains(maxProfit)) {
-        Seq.empty
-      } else {
-        val (nextTradingPost, _, trade) = calculateNextBestJump(base, possibleDestinations, ship, investment * penetration, lookahead)
-        trade match {
-          case Some((material, profit, unitsToBuy)) =>
-            val unitsToBuyString = s"$unitsToBuy${" "  * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
-            val currentInvestment = investment + profit
-            println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextTradingPost)} => $currentInvestment(+$profit) aUEC")
-            look(nextTradingPost, currentInvestment, previousProfits :+ profit)
-          case None =>
-            println(s"Nothing${" " * (Material.longestNameLength - 4 + ship.cargoSizeInUnits.toString.length)} -> ${base.prettyPrintNextJump(nextTradingPost)} => $investment(+0) aUEC")
-            look(nextTradingPost, investment, previousProfits)
-        }
-
+    def look(base: TradingPost, investment: UEC): Unit = {
+      val (nextTradingPost, _, trade) = calculateNextBestJump(base, possibleDestinations, ship, investment * penetration, lookahead)
+      val profit = trade.fold {
+        println( s"Nothing${" " * (Material.longestNameLength - 4 + ship.cargoSizeInUnits.toString.length)} -> ${base.prettyPrintNextJump(nextTradingPost)} => $investment(+0) aUEC")
+        0 UEC
+      } {
+        case (material, profit, unitsToBuy) =>
+          val unitsToBuyString = s"$unitsToBuy${" "  * (ship.cargoSizeInUnits.toString.length - unitsToBuy.toString.length)}"
+          println(s"${material.prettyPrint} x $unitsToBuyString -> ${base.prettyPrintNextJump(nextTradingPost)} => ${investment + profit}(+$profit) aUEC")
+          profit
+      }
+      if (profit != maxProfit) {
+        look(nextTradingPost, investment + profit)
       }
     }
 
     println(s"Starting at $startingTradingPost with $initialInvestment")
-    look(startingTradingPost, initialInvestment, Seq.empty)
+    look(startingTradingPost, initialInvestment)
   }
 
   def calculateNextBestJump(startingTradingPost: TradingPost, possibleDestinations: Map[TradingPost, ParSeq[TradingPost]], ship: Ship, startingInvestment: UEC, lookahead: Int = 1): Jump = {
@@ -75,11 +72,7 @@ object BestTradeRoutes {
           if (allJumps.size == lookahead) {
             Seq(allJumps)
           } else {
-            val profit = trade match {
-              case Some((_, profit, _)) => profit
-              case None => 0 UEC
-            }
-            calculateAllJumpsWithMaxLookahead(nextTradingPost, investment + profit, allJumps)
+            calculateAllJumpsWithMaxLookahead(nextTradingPost, trade.fold(investment)(investment + _._2), allJumps)
           }
         }
     }

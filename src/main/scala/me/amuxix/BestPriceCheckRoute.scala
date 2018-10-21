@@ -8,10 +8,14 @@ import scala.language.postfixOps
 object BestPriceCheckRoute {
   type PriceCheckMap = Map[TradingPost, Set[Material]]
 
-  val tradingPostsToCheck: Seq[TradingPost] = (tradingPosts - DrugLab).toSeq.sortBy(tradingPost => (tradingPost.bought.size, -tradingPost.sold.size))
+  val tradingPostsToCheck: Seq[TradingPost] = tradingPosts.toSeq.sortBy(tradingPost => (tradingPost.bought.size, -tradingPost.sold.size))
   val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
     prices + tradingPost.sold.size + tradingPost.bought.size
   )
+
+  val startingBase: TradingPost = GrimHex
+  val knownBases: Seq[TradingPost] = Seq(BountyfulHarvestHydroponics, TerraMillsHydroFarm, GaletteFamilyFarms, HickesResearchOutpost,
+    ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost)
 
   def main(args: Array[String]): Unit = {
     var bestRouteSize = totalPrices * 2
@@ -34,15 +38,22 @@ object BestPriceCheckRoute {
         tradingPostsToCheck.collect {
           case tradingPost if previousTradingPosts.count(_ == tradingPost) <= 2 && (distanceTraveled + previousTradingPosts.last.distanceTo(tradingPost)) < bestRouteTotalDistance => // At most we only need to visit a trading post twice
             val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) = updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, materialsInHull)
-            if (updatedPricesChecked > pricesChecked) { //Discard trading posts that give no new prices.
+            if (updatedPricesChecked > pricesChecked || updatedMaterialsInHull.size > materialsInHull.size) { //Discard trading posts that give no new prices or materials.
               look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, previousTradingPosts :+ tradingPost, distanceTraveled + previousTradingPosts.last.distanceTo(tradingPost))
             }
         }
       }
     }
-    tradingPostsToCheck.par.foreach { tradingPosts =>
-      val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) = updatePriceCheckMaps(tradingPosts, Map.empty, Map.empty, Set.empty)
-      look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, Seq(tradingPosts), 0)
+    val buyPriceCheckMap: PriceCheckMap = (knownBases :+ startingBase).map { base =>
+      base -> base.sold
+    }.toMap
+    val sellPriceCheckMap: PriceCheckMap = knownBases.map { base =>
+      base -> base.bought
+    }.toMap
+    tradingPostsToCheck.par.foreach { tradingPost =>
+      val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) =
+        updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, startingBase.sold)
+      look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, Seq(startingBase, tradingPost), startingBase.distanceTo(tradingPost))
     }
   }
 

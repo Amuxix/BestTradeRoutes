@@ -1,9 +1,11 @@
 package me.amuxix
 
-import me.amuxix.BestTradeRoutes.{Trade, allowIllegal, profitToTradingPosts}
+import me.amuxix.BestTradeRoutes.{Trade, profitToTradingPosts}
+
+import scala.language.postfixOps
 
 object Base {
-  val tradingPosts: Set[TradingPost] = stanton.tradingPosts
+  val tradingPosts: Set[TradingPost] = stanton.tradingPosts.filter(Conditions.tradePostFilter)
   val longestNameLength: Int = tradingPosts.map(_.toString.length).max
 }
 
@@ -64,26 +66,37 @@ abstract class Base {
   */
 abstract class TradingPost extends Base {
   val buy: Map[Material, Double] //Materials you can buy at this base
-  lazy val sold: Set[Material] = buy.keySet.filter(_.isIllegal && allowIllegal)
+  lazy val sold: Set[Material] = buy.keySet.filter(Conditions.materialFilter)
   val sell: Map[Material, Double] //materials you can sell at this base
-  lazy val bought: Set[Material] = sell.keySet.filter(_.isIllegal && allowIllegal)
+  lazy val bought: Set[Material] = sell.keySet.filter(Conditions.materialFilter)
 
   def canTrade(other: TradingPost): Boolean = {
     this != other && buy.exists { case (material, _) =>
-      (allowIllegal || !material.isIllegal) && other.sell.contains(material)
+      Conditions.materialFilter(material) && other.sell.contains(material)
     }
   }
 
   def bestProfit(other: TradingPost, ship: Ship, investment: UEC): Option[Trade] = {
-    profitToTradingPosts(this, other).collect {
-      case (material, Some(profit)) =>
-        val cost = this.buy(material)
-        val moneyBuys: Int = (investment.value / cost).toInt min ship.cargoSizeInUnits
-        val maxStock: Int = material.maxStock.fold(moneyBuys)(_ min moneyBuys)
-        (material,  UEC((maxStock * profit).toInt), maxStock)
-    } match {
-      case Seq() => None
-      case nonEmpty: Seq[Trade] => Some(nonEmpty.maxBy(_._2))
+    def amountAndProfit(material: Material, unitaryProfit: Double) = {
+      val cost = this.buy(material)
+      val moneyBuys: Int = (investment.value / cost).toInt
+      val amountToBuy = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
+      val profit = UEC((amountToBuy * unitaryProfit).toInt)
+      (amountToBuy, profit)
+    }
+
+    profitToTradingPosts(this, other).foldLeft(None: Option[Trade]){
+      case (None, (material, Some(unitaryProfit))) =>
+        val (amountToBuy: Int, profit: UEC) = amountAndProfit(material, unitaryProfit)
+        Some((material, profit, amountToBuy))
+      case (previous @ Some((_, bestProfit, _)), (material, Some(unitaryProfit))) =>
+        val (amountToBuy: Int, profit: UEC) = amountAndProfit(material, unitaryProfit)
+        if (profit > bestProfit) {
+          Some((material,  profit, amountToBuy))
+        } else {
+          previous
+        }
+      case (previous, _) => previous
     }
   }
 }

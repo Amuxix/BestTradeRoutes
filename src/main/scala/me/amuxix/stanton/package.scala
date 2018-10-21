@@ -14,7 +14,7 @@ package object stanton {
     override val buy: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.75,
       Fluorine -> 2.65,
-      Gold -> 6.06,
+      Gold -> 6.08,
       MedicalSupplies -> 17.02,
       Scrap -> 1.52,
       Waste -> 0.09
@@ -25,7 +25,7 @@ package object stanton {
       Astatine -> 8.44,
       Beryl -> 4.3,
       Chlorine -> 1.56,
-      Corundum -> 2.58,
+      Corundum -> 2.8,
       Diamond -> 6.8,
       DistilledSpirits -> 4.95,
       Hydrogen -> 0.17,
@@ -33,25 +33,27 @@ package object stanton {
       Laranite -> 28.54,
       ProcessedFood -> 1.38,
       Quartz -> 1.46,
-      Stims -> 3.38
+      Stims -> 3.42,
+      Titanium -> 2.29,
+      Tungsten -> 3.94
     )
   }
 
   case object ArcCorpMiningArea141 extends TradingPost {
     override val celestialBody: CelestialBody = Daymar
     override val buy: Map[Material, Double] = Map(
-      Agricium -> 25.04,
+      Agricium -> 24.92,
       Beryl -> 4.09,
       Quartz -> 1.33,
       Tungsten -> 3.65
     )
     override val sell: Map[Material, Double] = Map(
-      Alutruciatoxine -> 11.8,
+      Alutruciatoxine -> 0,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.02,
+      MedicalSupplies -> 17.37,
       ProcessedFood -> 1.38,
-      Stims -> 3.38,
-      WiDoW -> 27
+      Stims -> 3.42,
+      WiDoW -> 0
     )
   }
 
@@ -64,7 +66,7 @@ package object stanton {
     )
     override val sell: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.8,
-      MedicalSupplies -> 17.02
+      MedicalSupplies -> 17.97
     )
   }
 
@@ -72,17 +74,17 @@ package object stanton {
     override val celestialBody: CelestialBody = Daymar
     override val buy: Map[Material, Double] = Map(
       Beryl -> 4.09,
-      Gold -> 5.94,
+      Gold -> 5.71,
       Quartz -> 1.33,
-      Tungsten -> 3.94
+      Tungsten -> 3.65
     )
     override val sell: Map[Material, Double] = Map(
-      Alutruciatoxine -> 10.79,
+      Alutruciatoxine -> 0,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.02,
+      MedicalSupplies -> 17.97,
       ProcessedFood -> 1.38,
       Stims -> 3.42,
-      WiDoW -> 27
+      WiDoW -> 0
     )
   }
 
@@ -95,7 +97,7 @@ package object stanton {
     )
     override val sell: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.8,
-      MedicalSupplies -> 17.02
+      MedicalSupplies -> 17.97
     )
   }
 
@@ -108,7 +110,7 @@ package object stanton {
     )
     override val sell: Map[Material, Double] = Map(
       AgricultureSupplies -> 0.8,
-      MedicalSupplies -> 17.65
+      MedicalSupplies -> 17.72
     )
   }
 
@@ -133,16 +135,16 @@ package object stanton {
       Aluminum -> 1.17,
       Corundum -> 2.41,
       Diamond -> 6.39,
-      Laranite -> 28.54,
+      Laranite -> 28.03,
       Titanium -> 2.1
     )
     override val sell: Map[Material, Double] = Map(
-      Alutruciatoxine -> 11.8,
+      Alutruciatoxine -> 0,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.02,
+      MedicalSupplies -> 17.97,
       ProcessedFood -> 1.38,
-      Stims -> 3.34,
-      WiDoW -> 27
+      Stims -> 3.42,
+      WiDoW -> 0
     )
   }
 
@@ -151,13 +153,13 @@ package object stanton {
     override val buy: Map[Material, Double] = Map(
       Agricium -> 25.72,
       Diamond -> 6.8,
-      Gold -> 5.94,
+      Gold -> 6.08,
       Laranite -> 28.54,
       Scrap -> 1.52
     )
     override val sell: Map[Material, Double] = Map(
       Aluminum -> 1.22,
-      Alutruciatoxine -> 9.79,
+      Alutruciatoxine -> 0,
       Astatine -> 8.44,
       Beryl -> 4.3,
       Chlorine -> 1.56,
@@ -166,52 +168,52 @@ package object stanton {
       Fluorine -> 2.75,
       Hydrogen -> 0.17,
       Iodine -> 0.44,
-      MedicalSupplies -> 17.02,
+      MedicalSupplies -> 17.97,
       ProcessedFood -> 1.38,
       Quartz -> 1.46,
-      Stims -> 3.33,
+      Stims -> 3.42,
       Titanium -> 2.29,
       Tungsten -> 3.94,
       Waste -> 0.1,
-      WiDoW -> 16.99
+      WiDoW -> 0
     )
   }
 
   case object ArcCorpMiningArea157 extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
-      Astatine -> 8.44,
+      Astatine -> 7.91,
       Chlorine -> 1.44,
       Fluorine -> 2.54,
-      Hydrogen -> 0.17,
-      Iodine -> 0.41
+      Hydrogen -> 0.12,
+      Iodine -> 0.35
     )
     override val sell: Map[Material, Double] = Map(
-      Alutruciatoxine -> 10.99,
+      Alutruciatoxine -> 0,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.02,
+      MedicalSupplies -> 17.97,
       ProcessedFood -> 1.38,
       Stims -> 3.42,
-      WiDoW -> 27
+      WiDoW -> 0
     )
   }
 
   case object BensonMiningOutpost extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
-      Astatine -> 8.17,
+      Astatine -> 7.91,
       Chlorine -> 1.44,
       Fluorine -> 2.54,
       Hydrogen -> 0.12,
-      Iodine -> 0.44
+      Iodine -> 0.35
     )
     override val sell: Map[Material, Double] = Map(
-      Alutruciatoxine -> 10.47,
+      Alutruciatoxine -> 0,
       DistilledSpirits -> 4.95,
-      MedicalSupplies -> 17.02,
+      MedicalSupplies -> 17.97,
       ProcessedFood -> 1.38,
       Stims -> 3.42,
-      WiDoW -> 27
+      WiDoW -> 0
     )
   }
 
@@ -233,25 +235,25 @@ package object stanton {
   case object DrugLab extends TradingPost {
     override val celestialBody: CelestialBody = Yela
     override val buy: Map[Material, Double] = Map(
-      Alutruciatoxine -> 10.77,
-      WiDoW -> 26.66
+    Alutruciatoxine -> 0,
+    WiDoW -> 0
     )
     override val sell: Map[Material, Double] = Map(
-      AgricultureSupplies -> 0.8
+      AgricultureSupplies -> 0
     )
   }
 
   case object Levski extends TradingPost {
     override val celestialBody: CelestialBody = Delamar
     override val buy: Map[Material, Double] = Map(
-      AgricultureSupplies -> 0.8,
+      AgricultureSupplies -> 0.69,
       Aluminum -> 1.17,
-      Iodine -> 0.44,
-      Quartz -> 1.4
+      Iodine -> 0.35,
+      Quartz -> 1.33
     )
     override val sell: Map[Material, Double] = Map(
       Agricium -> 25.72,
-      Alutruciatoxine -> 9.79,
+      Alutruciatoxine -> 0,
       Astatine -> 8.44,
       Beryl -> 4.3,
       Chlorine -> 1.56,
@@ -262,14 +264,14 @@ package object stanton {
       Gold -> 6.08,
       Hydrogen -> 0.17,
       Laranite -> 28.54,
-      MedicalSupplies -> 13.32,
+      MedicalSupplies -> 17.97,
       ProcessedFood -> 1.38,
       Scrap -> 1.6,
       Stims -> 3.42,
       Titanium -> 2.29,
       Tungsten -> 3.94,
       Waste -> 0.1,
-      WiDoW -> 16.99
+      WiDoW -> 0
     )
   }
 }
