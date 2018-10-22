@@ -1,11 +1,12 @@
 package me.amuxix
 
 import me.amuxix.BestTradeRoutes.{Trade, profitToTradingPosts}
+import me.amuxix.stanton.StantonSystem
 
 import scala.language.postfixOps
 
 object Base {
-  val tradingPosts: Set[TradingPost] = stanton.tradingPosts.filter(Conditions.tradePostFilter)
+  val tradingPosts: Set[TradingPost] = StantonSystem.tradingPosts.filter(Conditions.tradePostFilter)
   val longestNameLength: Int = tradingPosts.map(_.toString.length).max
 }
 
@@ -13,7 +14,7 @@ abstract class Base {
   /**
     * The celestial body where this base is located.
     */
-  val celestialBody: CelestialBody
+  def celestialBody: CelestialBody
 
   def distanceFromOrbit: Km = {
     celestialBody match {
@@ -22,28 +23,15 @@ abstract class Base {
     }
   }
 
-  lazy val parentOrbits: Seq[CelestialBody] = celestialBody.parentOrbits
-
-  def distanceTo(other: Base): Km =
+  def distanceTo(other: Base): Distance =
     if (this == other) {
-      0
+      Distance.zero
     } else {
+      val flyingDistance = FlyingDistance(celestialBody.heightOfAtmosphere + other.distanceFromOrbit)
       if (celestialBody == other.celestialBody) {
-        celestialBody.heightOfAtmosphere + other.distanceFromOrbit
-      } else if (celestialBody.orbits(other.celestialBody)) {
-        // The celestial body where this base is located orbits the celestial body where the other base is located
-        celestialBody.heightOfAtmosphere + other.distanceFromOrbit + 1000
-      } else if (other.celestialBody.orbits(celestialBody)) {
-        // The celestial body where the other base is located orbits the celestial body where this base is located
-        other.celestialBody.heightOfAtmosphere + distanceFromOrbit + 1000
+        Distance(QuantumDistance.zero, flyingDistance)
       } else {
-        (for {
-          lowestCommonAncestor <- parentOrbits.find(other.parentOrbits.contains)
-          lowestCommonAncestorChildren = lowestCommonAncestor.orbitedBy
-          nearestAncestorOfThis <- parentOrbits.find(lowestCommonAncestorChildren.contains)
-          nearestAncestorOfOther <- other.parentOrbits.find(lowestCommonAncestorChildren.contains)
-        } yield lowestCommonAncestor.distance(nearestAncestorOfThis, nearestAncestorOfOther))
-          .getOrElse(throw new Exception(s"Cannot calculate distance from $this to $other"))
+        Distance(celestialBody.distance(other.celestialBody), flyingDistance)
       }
     }
 

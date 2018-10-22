@@ -4,7 +4,7 @@ import me.amuxix.stanton.moons.Daymar
 import me.amuxix.{Alutruciatoxine, Beryl, CelestialBody, DistilledSpirits, Gold, Material, MedicalSupplies, ProcessedFood, Quartz, Stims, TradingPost, Tungsten, WiDoW}
 
 case object ShubinMiningFacility extends TradingPost {
-  override val celestialBody: CelestialBody = Daymar
+  override lazy val celestialBody: CelestialBody = Daymar
   override val buy: Map[Material, Double] = Map(
     Beryl -> 4.09,
     Gold -> 5.71,

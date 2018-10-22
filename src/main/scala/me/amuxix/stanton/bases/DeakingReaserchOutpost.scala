@@ -1,10 +1,10 @@
 package me.amuxix.stanton.bases
 
-import me.amuxix.{AgricultureSupplies, Astatine, CelestialBody, Chlorine, Fluorine, Iodine, Material, MedicalSupplies, ProcessedFood, TradingPost}
 import me.amuxix.stanton.moons.Yela
+import me.amuxix.{AgricultureSupplies, Astatine, CelestialBody, Chlorine, Fluorine, Iodine, Material, MedicalSupplies, ProcessedFood, TradingPost}
 
 case object DeakingReaserchOutpost extends TradingPost {
-  override val celestialBody: CelestialBody = Yela
+  override lazy val celestialBody: CelestialBody = Yela
   override val buy: Map[Material, Double] = Map(
     AgricultureSupplies -> 0.69,
     MedicalSupplies -> 17.02

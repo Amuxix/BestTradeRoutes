@@ -4,7 +4,7 @@ import me.amuxix._
 import me.amuxix.stanton.stations
 
 case object PortOlisar extends TradingPost {
-  override val celestialBody: CelestialBody = stations.PortOlisar
+  override lazy val celestialBody: CelestialBody = stations.PortOlisar
   override val buy: Map[Material, Double] = Map(
     AgricultureSupplies -> 0.75,
     Fluorine -> 2.65,

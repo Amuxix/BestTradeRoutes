@@ -4,7 +4,7 @@ import me.amuxix.stanton.moons.Cellin
 import me.amuxix.{Aluminum, Alutruciatoxine, CelestialBody, Corundum, Diamond, DistilledSpirits, Laranite, Material, MedicalSupplies, ProcessedFood, Stims, Titanium, TradingPost, WiDoW}
 
 case object TramMyersMining extends TradingPost {
-  override val celestialBody: CelestialBody = Cellin
+  override lazy val celestialBody: CelestialBody = Cellin
   override val buy: Map[Material, Double] = Map(
     Aluminum -> 1.17,
     Corundum -> 2.41,

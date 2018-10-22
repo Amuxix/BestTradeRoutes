@@ -4,7 +4,7 @@ import me.amuxix.stanton.moons.Yela
 import me.amuxix.{Alutruciatoxine, Astatine, CelestialBody, Chlorine, DistilledSpirits, Fluorine, Hydrogen, Iodine, Material, MedicalSupplies, ProcessedFood, Stims, TradingPost, WiDoW}
 
 case object ArcCorpMiningArea157 extends TradingPost {
-  override val celestialBody: CelestialBody = Yela
+  override lazy val celestialBody: CelestialBody = Yela
   override val buy: Map[Material, Double] = Map(
     Astatine -> 7.91,
     Chlorine -> 1.44,

@@ -4,7 +4,7 @@ import me.amuxix.stanton.moons.Cellin
 import me.amuxix.{AgricultureSupplies, CelestialBody, DistilledSpirits, Material, MedicalSupplies, ProcessedFood, Stims, TradingPost}
 
 case object TerraMillsHydroFarm extends TradingPost  {
-  override val celestialBody: CelestialBody = Cellin
+  override lazy val celestialBody: CelestialBody = Cellin
   override val buy: Map[Material, Double] = Map(
     DistilledSpirits -> 4.64,
     ProcessedFood -> 1.31,

@@ -16,6 +16,9 @@ package object amuxix {
 
   implicit class Km(val value: Int) extends AnyVal with Ordered[Km] {
     def +(other: Km): Km = new Km(value + other.value)
+    def -(other: Km): Km = new Km(value - other.value)
+    def *(other: Km): Km = new Km(value * other.value)
+    def /(other: Km): Km = new Km(value * other.value)
     def Km: Km = new Km(value)
 
     override def compare(that: Km): Int = value - that.value
@@ -62,4 +65,9 @@ package object amuxix {
       s"${(x * 100).truncated(2)}%"
     }
   }
+
+  implicit def km2Int(km: Km): Int = km.value
+
+  def pow(x: Int): Int = x * x
+  def sqrt(x: Int): Int = math.sqrt(x).toInt
 }

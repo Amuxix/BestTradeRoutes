@@ -17,7 +17,7 @@ object BestPriceCheckRoute {
   val knownBases: Seq[TradingPost] = Seq(BountyfulHarvestHydroponics, TerraMillsHydroFarm, GaletteFamilyFarms, HickesResearchOutpost,
     ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost)
 
-  def main(args: Array[String]): Unit = {
+  /*def main(args: Array[String]): Unit = {
     var bestRouteSize = totalPrices * 2
     var bestRouteTotalDistance: Km = Int.MaxValue
     val existsTradingPostThatBuysNothing = tradingPostsToCheck.exists(_.sold.isEmpty)
@@ -55,7 +55,7 @@ object BestPriceCheckRoute {
         updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, startingBase.sold)
       look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, Seq(startingBase, tradingPost), startingBase.distanceTo(tradingPost))
     }
-  }
+  }*/
 
   def updatePriceCheckMaps(tradingPost: TradingPost, buyPriceCheckMap: PriceCheckMap, sellPriceCheckMap: PriceCheckMap, materialsInHull: Set[Material]): (PriceCheckMap, PriceCheckMap, Set[Material], Int) = {
     val updatedBuyPriceCheckMap = buyPriceCheckMap.updated(tradingPost, tradingPost.sold)

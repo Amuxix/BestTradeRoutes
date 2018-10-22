@@ -4,7 +4,7 @@ import me.amuxix.stanton.moons.Daymar
 import me.amuxix.{AgricultureSupplies, CelestialBody, DistilledSpirits, Material, MedicalSupplies, ProcessedFood, Stims, TradingPost}
 
 case object BountyfulHarvestHydroponics extends TradingPost {
-  override val celestialBody: CelestialBody = Daymar
+  override lazy val celestialBody: CelestialBody = Daymar
   override val buy: Map[Material, Double] = Map(
     DistilledSpirits -> 4.64,
     ProcessedFood -> 1.31,

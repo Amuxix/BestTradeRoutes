@@ -4,7 +4,7 @@ import me.amuxix.stanton.planets.Delamar
 import me.amuxix.{Agricium, AgricultureSupplies, Aluminum, Alutruciatoxine, Astatine, Beryl, CelestialBody, Chlorine, Corundum, Diamond, DistilledSpirits, Fluorine, Gold, Hydrogen, Iodine, Laranite, Material, MedicalSupplies, ProcessedFood, Quartz, Scrap, Stims, Titanium, TradingPost, Tungsten, Waste, WiDoW}
 
 case object Levski extends TradingPost {
-  override val celestialBody: CelestialBody = Delamar
+  override lazy val celestialBody: CelestialBody = Delamar
   override val buy: Map[Material, Double] = Map(
     AgricultureSupplies -> 0.69,
     Aluminum -> 1.17,

@@ -1,17 +1,20 @@
 package me.amuxix
 
-abstract class System {
-  val center: CelestialBody
+abstract class System(val c1: Charter, val c2: Charter, val c3: Charter, val c4: Charter) {
+  def center: CelestialBody
 
-  val planets: Set[Planet]
-  val moons: Set[Moon]
-  val spaceStations: Set[SpaceStation]
-  val celestialBodies: Set[CelestialBody] = planets ++ moons ++ spaceStations + center
+  def planets: Set[Planet]
+  def moons: Set[Moon]
+  def spaceStations: Set[SpaceStation]
+  lazy val celestialBodies: Set[CelestialBody] = Set(center) ++ planets ++ moons ++ spaceStations
+  /*val charters: Set[Charts] = celestialBodies.collect {
+    case charts: CelestialBody with Charts => charts
+  }*/
 
-  val bases: Set[Base] = celestialBodies.collect {
+  lazy val bases: Set[Base] = celestialBodies.collect {
     case celestialBody: CelestialBody with Inhabited => celestialBody.bases
   }.flatten
-  val tradingPosts: Set[TradingPost] = celestialBodies.collect {
+  lazy val tradingPosts: Set[TradingPost] = celestialBodies.collect {
     case celestialBody: CelestialBody with Inhabited => celestialBody.tradingPosts
   }.flatten
 }

@@ -4,7 +4,7 @@ import me.amuxix._
 import me.amuxix.stanton.moons.Daymar
 
 case object ArcCorpMiningArea141 extends TradingPost {
-  override val celestialBody: CelestialBody = Daymar
+  override lazy val celestialBody: CelestialBody = Daymar
   override val buy: Map[Material, Double] = Map(
     Agricium -> 24.92,
     Beryl -> 4.09,
