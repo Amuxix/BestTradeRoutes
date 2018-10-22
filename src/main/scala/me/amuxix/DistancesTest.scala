@@ -15,5 +15,6 @@ object DistancesTest {
     val distance = base1.distanceTo(base2)
     println(distance)
     println(distance.timeToTravel(Freelancer))
+    println("done")
   }
 }
