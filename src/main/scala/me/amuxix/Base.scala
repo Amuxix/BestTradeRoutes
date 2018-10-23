@@ -31,7 +31,7 @@ abstract class Base {
       if (celestialBody == other.celestialBody) {
         Distance(QuantumDistance.zero, flyingDistance)
       } else {
-        Distance(celestialBody.distance(other.celestialBody), flyingDistance)
+        Distance(celestialBody.distanceTo(other.celestialBody), flyingDistance)
       }
     }
 

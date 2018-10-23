@@ -6,7 +6,8 @@ object Distance {
 
 case class Distance(quantumDistance: QuantumDistance, flyingDistance: FlyingDistance) {
   def +(other: Distance): Distance = copy(quantumDistance + other.quantumDistance, flyingDistance + other.flyingDistance)
-  def timeToTravel(ship: Ship): Int = quantumDistance.timeToTravel(ship) + flyingDistance.timeToTravel(ship)
+  def timeToTravel(ship: Ship): Long = quantumDistance.timeToTravel(ship) + flyingDistance.timeToTravel(ship)
+  override def toString: String = s"$quantumDistance $flyingDistance"
 }
 
 object FlyingDistance {
@@ -15,7 +16,8 @@ object FlyingDistance {
 
 case class FlyingDistance(distance: Km) {
   def +(other: FlyingDistance): FlyingDistance = FlyingDistance(distance + other.distance)
-  def timeToTravel(ship: Ship): Int = distance * ship.speed
+  def timeToTravel(ship: Ship): Long = (distance * 1000) / ship.speed
+  override def toString: String = s"FlyingDistance($distance)"
 }
 
 object QuantumDistance {
@@ -25,6 +27,8 @@ object QuantumDistance {
 
 case class QuantumDistance(jumps: Int, distance: Km) {
   def +(other: QuantumDistance): QuantumDistance = QuantumDistance(jumps + other.jumps, distance + other.distance)
-  def timeToTravel(ship: Ship): Int =
-    (jumps * (ship.calibrationPlusDriveSpoolTime + QuantumDistance.quantumDriveCooldown) + distance / ship.quantumDriveSpeed).toInt
+  def timeToTravel(ship: Ship): Long =
+    (jumps * (ship.calibrationPlusDriveSpoolTime + QuantumDistance.quantumDriveCooldown) + distance / ship.quantumDriveSpeed).toLong
+
+  override def toString: String = s"QuantumDistance($jumps, $distance)"
 }

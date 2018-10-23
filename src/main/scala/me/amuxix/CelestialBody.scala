@@ -47,17 +47,21 @@ sealed abstract class CelestialBody {
 
   def heightOfAtmosphere: Km = this match {
     case hasAtmosphere: Atmosphere => hasAtmosphere.atmosphereHeight
-    case _ => Km(0)
+    case _ => 0 Km
   }
 
-  def linearDistance(other: CelestialBody): Int = position.linearDistance(other.position)
+  def linearDistance(other: CelestialBody): Long = position.linearDistance(other.position)
 
   def hasDirectPath(other: CelestialBody): Boolean = {
-    val linearPath = Line(position, other.position)
-    system.celestialBodies.forall(body => linearPath.distance(body.position) < body.equatorialRadius)
+    lazy val line = Line(position, other.position)
+    system.celestialBodies
+      .filter(body => body != this && body != other)
+      .forall { body =>
+        line.distance(body.position) >= body.equatorialRadius
+      }
   }
 
-  def distance(other: CelestialBody): QuantumDistance = {
+  def distanceTo(other: CelestialBody): QuantumDistance = {
     require(system == other.system, "Both bases must be on the same system.")
     if (this == other) {
       QuantumDistance.zero
@@ -66,7 +70,7 @@ sealed abstract class CelestialBody {
         QuantumDistance(1, linearDistance(other))
       } else {
         val (_, maybeStation) = system.spaceStations
-          .foldLeft((Int.MaxValue, None: Option[SpaceStation])){
+          .foldLeft((Long.MaxValue, None: Option[SpaceStation])){
             case (old @ (currentMinimum, _), station) if hasDirectPath(station) && station.hasDirectPath(other)=>
               val distance = linearDistance(station) + station.linearDistance(other)
               if (distance < currentMinimum) {
@@ -82,10 +86,11 @@ sealed abstract class CelestialBody {
           val closestToTarget = system.spaceStations
             .filter(_.hasDirectPath(other))
             .minBy(_.linearDistance(other))
+          //When this eventually fails wrap closest target in a Try and improve the logic to find a 3rd or more jump
           //Jump from closestToTarget to other will not be direct!
-          distance(closestToTarget) + closestToTarget.distance(other)
+          distanceTo(closestToTarget) + closestToTarget.distanceTo(other)
         } { station =>
-          distance(station) + station.distance(other)
+          distanceTo(station) + station.distanceTo(other)
         }
       }
     }
@@ -126,16 +131,16 @@ object CelestialBody {
     /**
       * Generic formula to generate a linear equation used to apply the Cramer’s rule
       */
-    def e(a: Charter, b: Charter): Array[Int] = Array[Int](
+    def e(a: Charter, b: Charter): Array[Long] = Array[Long](
       2 * (b.x - a.x),
       2 * (b.y - a.y),
       2 * (b.z - a.z),
       (pow(a(c)) - pow(b(c))) - (pow(a.x) - pow(b.x)) - (pow(a.y) - pow(b.y)) - (pow(a.z) - pow(b.z))
     )
 
-    val e1: Array[Int] = e(system.c1, system.c2)
-    val e2: Array[Int] = e(system.c1, system.c3)
-    val e3: Array[Int] = e(system.c1, system.c4)
+    val e1: Array[Long] = e(system.c1, system.c2)
+    val e2: Array[Long] = e(system.c1, system.c3)
+    val e3: Array[Long] = e(system.c1, system.c4)
 
     /**
       * Function that calculates the determinant of the top matrix used by the Cramer’s rule.
@@ -152,6 +157,6 @@ object CelestialBody {
     val y = matrixDeterminant(b = 3) / bottomMatrix
     val z = matrixDeterminant(c = 3) / bottomMatrix
 
-    Point(x, y, z)
+    Point(x.toInt, y.toInt, z.toInt)
   }
 }

@@ -1,19 +1,19 @@
 package me.amuxix
 
-case class Point(x: Int, y: Int, z: Int) {
+case class Point(x: Long, y: Long, z: Long) {
   def -(o: Point): Point = Point(x - o.x, y - o.y, z - o.z)
-  def linearDistance(o: Point): Int = sqrt(pow(x - o.x) + pow(y - o.y) + pow(z - o.z))
+  def linearDistance(o: Point): Long = sqrt(pow(x - o.x) + pow(y - o.y) + pow(z - o.z))
 }
 
 case class Line(p1: Point, p2: Point) {
-  case class LineEquation(a: Int, b: Int, c: Int, d: Int)
+  case class LineEquation(a: Long, b: Long, c: Long, d: Long)
 
   val eq: LineEquation = p2 - p1 match {
     case Point(0, 0, 0) =>
       throw new UnsupportedOperationException("The points must be different.")
     case Point(x, y, z) =>
       var equation = LineEquation(0, 0, 0, 0)
-      var d = 1
+      var d: Long = 1
       if (x == 0) {
         equation = equation.copy(a = 1)
       } else {
@@ -37,9 +37,9 @@ case class Line(p1: Point, p2: Point) {
       equation.copy(d = d)
   }
 
-  def distance(p: Point): Int = {
-    (math.abs(eq.a * p.x + eq.b * p.y + eq.c * p.z + eq.d) / math.sqrt(pow(eq.a) + pow(eq.b) + pow(eq.c))).toInt
+  def distance(p: Point): Long = {
+    (math.abs(eq.a * p.x + eq.b * p.y + eq.c * p.z + eq.d) / math.sqrt(pow(eq.a) + pow(eq.b) + pow(eq.c))).toLong
   }
 
-  def pow(a: Int): Int = a * a
+  def pow(a: Long): Long = a * a
 }
