@@ -2,6 +2,8 @@ package me.amuxix
 
 import me.amuxix.BestTradeRoutes.{Trade, profitToTradingPosts}
 import me.amuxix.stanton.StantonSystem
+import squants.space.Length
+import squants.space.LengthConversions._
 
 import scala.language.postfixOps
 
@@ -16,22 +18,22 @@ abstract class Base {
     */
   def celestialBody: CelestialBody
 
-  def distanceFromOrbit: Km = {
+  def distanceFromOrbit: Length = {
     celestialBody match {
-      case _: SpaceStation => 10 Km
-      case _ => 60 Km
+      case _: SpaceStation => 10 km
+      case _ => 60 km
     }
   }
 
   def distanceTo(other: Base): Distance =
     if (this == other) {
-      Distance.zero
+      Distance.Zero
     } else {
       val flyingDistance = FlyingDistance(celestialBody.heightOfAtmosphere + other.distanceFromOrbit)
       if (celestialBody == other.celestialBody) {
-        Distance(QuantumDistance.zero, flyingDistance)
+        Distance(QuantumDistance.Zero, flyingDistance)
       } else {
-        Distance(celestialBody.distance(other.celestialBody), flyingDistance)
+        Distance(celestialBody.distanceTo(other.celestialBody), flyingDistance)
       }
     }
 
@@ -68,7 +70,7 @@ abstract class TradingPost extends Base {
     def amountAndProfit(material: Material, unitaryProfit: Double) = {
       val cost = this.buy(material)
       val moneyBuys: Int = (investment.value / cost).toInt
-      val amountToBuy = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
+      val amountToBuy: Int = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
       val profit = UEC((amountToBuy * unitaryProfit).toInt)
       (amountToBuy, profit)
     }

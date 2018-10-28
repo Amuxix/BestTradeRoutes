@@ -14,20 +14,6 @@ package object amuxix {
     def G: G = new G(value)
   }
 
-  implicit class Km(val value: Int) extends AnyVal with Ordered[Km] {
-    def +(other: Km): Km = new Km(value + other.value)
-    def -(other: Km): Km = new Km(value - other.value)
-    def *(other: Km): Km = new Km(value * other.value)
-    def /(other: Km): Km = new Km(value * other.value)
-    def Km: Km = new Km(value)
-
-    override def compare(that: Km): Int = value - that.value
-  }
-
-  object Km {
-    def unapply(arg: Km): Option[Int] = Some(arg.value)
-  }
-
   implicit class UEC(val value: Int) extends AnyVal with Ordered[UEC] {
     def +(other: UEC): UEC = new UEC(value + other.value)
     def *(other: Double): UEC = new UEC((value * other).toInt)
@@ -37,15 +23,6 @@ package object amuxix {
     override def compare(that: UEC): Int = value.compare(that.value)
 
     override def toString: String = value.toString
-  }
-
-  case class AU(value: Double) extends AnyVal {
-    def toKilometers: Km = (value * 149597870.7).round.toInt Km
-    def AU: AU = new AU(value)
-    def +(other: AU): AU = new AU(value + other.value)
-    def -(other: AU): AU = new AU(value - other.value)
-    def *(other: AU): AU = new AU(value * other.value)
-    def /(other: AU): AU = new AU(value / other.value)
   }
 
   implicit class ExtendedDouble(x: Double) {
@@ -66,8 +43,6 @@ package object amuxix {
     }
   }
 
-  implicit def km2Int(km: Km): Int = km.value
-
-  def pow(x: Int): Int = x * x
-  def sqrt(x: Int): Int = math.sqrt(x).toInt
+  def pow(x: Long): Long = x * x
+  def sqrt(x: Long): Long = math.sqrt(x).toLong
 }

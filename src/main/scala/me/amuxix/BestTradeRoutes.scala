@@ -2,13 +2,15 @@ package me.amuxix
 
 import me.amuxix.Base.tradingPosts
 import me.amuxix.Material.materials
+import me.amuxix.stanton.bases.PortOlisar
 
+import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
 import scala.language.postfixOps
 
 object BestTradeRoutes {
   type Trade = (Material, UEC, Int)
-  type Jump = (TradingPost, Km, Option[Trade])
+  type Jump = (TradingPost, Distance, Option[Trade])
 
   val possibleDestinations: Map[TradingPost, ParSeq[TradingPost]] = tradingPosts.map { tradingPost =>
     tradingPost -> tradingPosts.filter(tradingPost.canTrade).toSeq.par
@@ -27,7 +29,7 @@ object BestTradeRoutes {
       }
     }.toMap
 
-  /*def main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit = {
     require(args.length == 4, "Please specify ship, initial investment, investment penetration and lookahead.")
     val ship = Ship.fromString(args.head)
     val initialInvestment: UEC = UEC((args(1).toDouble * 1000).toInt)
@@ -80,5 +82,5 @@ object BestTradeRoutes {
         case (accProfit, (_, _, None)) => accProfit
       }
     }.head
-  }*/
+  }
 }
