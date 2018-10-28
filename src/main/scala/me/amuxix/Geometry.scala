@@ -1,8 +1,15 @@
 package me.amuxix
 
-case class Point(x: Long, y: Long, z: Long) {
-  def -(o: Point): Point = Point(x - o.x, y - o.y, z - o.z)
-  def linearDistance(o: Point): Long = sqrt(pow(x - o.x) + pow(y - o.y) + pow(z - o.z))
+import squants.space.{Kilometers, Length}
+
+case class Point private(x: Long, y: Long, z: Long) {
+  def -(o: Point): Point = new Point(x - o.x, y - o.y, z - o.z)
+  def linearDistance(o: Point): Length = Kilometers(sqrt(pow(x - o.x) + pow(y - o.y) + pow(z - o.z)))
+}
+
+object Point {
+  def apply(x: Length, y: Length, z: Length): Point = new Point(x.value.toLong, y.value.toLong, z.value.toLong)
+  private def apply(x: Long, y: Long, z: Long): Point = new Point(x, y, z)
 }
 
 case class Line(p1: Point, p2: Point) {
@@ -37,8 +44,8 @@ case class Line(p1: Point, p2: Point) {
       equation.copy(d = d)
   }
 
-  def distance(p: Point): Long = {
-    (math.abs(eq.a * p.x + eq.b * p.y + eq.c * p.z + eq.d) / math.sqrt(pow(eq.a) + pow(eq.b) + pow(eq.c))).toLong
+  def distance(p: Point): Length = {
+    Kilometers(math.abs(eq.a * p.x + eq.b * p.y + eq.c * p.z + eq.d) / math.sqrt(pow(eq.a) + pow(eq.b) + pow(eq.c)))
   }
 
   def pow(a: Long): Long = a * a
