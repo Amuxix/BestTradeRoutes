@@ -11,12 +11,8 @@ import scala.language.postfixOps
   * This body needs to know the distance to every body in the system he is on.
   */
 trait Charter { this: CelestialBody =>
-  def distances: Map[CelestialBody, Length]
   protected val absolutePosition: Point
   override lazy val position: Point = absolutePosition
-
-  def apply(celestialBody: CelestialBody): Length = distances(celestialBody)
-
   lazy val Point(x, y, z) = absolutePosition
 }
 
@@ -51,6 +47,10 @@ sealed abstract class CelestialBody {
   def orbitedBy: Set[CelestialBody with Orbits]
   val gravity: G
   val equatorialRadius: Length
+  val charter1Distance: Length
+  val charter2Distance: Length
+  val charter3Distance: Length
+  val charter4Distance: Length
   lazy val position: Point = CelestialBody.position(this)
 
   def isOrbitedBy(celestialBody: CelestialBody with Orbits): Boolean = orbitedBy.contains(celestialBody)
@@ -144,16 +144,16 @@ object CelestialBody {
     /**
       * Generic formula to generate a linear equation used to apply the Cramer’s rule
       */
-    def e(a: Charter, b: Charter): Array[Long] = Array[Long](
+    def e(a: Charter, b: Charter, da: Length, db: Length): Array[Long] = Array[Long](
       2 * (b.x - a.x),
       2 * (b.y - a.y),
       2 * (b.z - a.z),
-      (pow(a(c).value.toLong) - pow(b(c).value.toLong)) - (pow(a.x) - pow(b.x)) - (pow(a.y) - pow(b.y)) - (pow(a.z) - pow(b.z))
+      (pow(da.value.toLong) - pow(db.value.toLong)) - (pow(a.x) - pow(b.x)) - (pow(a.y) - pow(b.y)) - (pow(a.z) - pow(b.z))
     )
 
-    val e1: Array[Long] = e(system.c1, system.c2)
-    val e2: Array[Long] = e(system.c1, system.c3)
-    val e3: Array[Long] = e(system.c1, system.c4)
+    val e1: Array[Long] = e(system.c1, system.c2, c.charter1Distance, c.charter2Distance)
+    val e2: Array[Long] = e(system.c1, system.c3, c.charter1Distance, c.charter3Distance)
+    val e3: Array[Long] = e(system.c1, system.c4, c.charter1Distance, c.charter4Distance)
 
     /**
       * Function that calculates the determinant of the top matrix used by the Cramer’s rule.

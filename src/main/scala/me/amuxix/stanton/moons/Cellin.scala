@@ -18,4 +18,8 @@ case object Cellin extends Moon with Atmosphere with Inhabited {
   override lazy val orbitedBy: Set[CelestialBody with Orbits] = Set.empty
   override lazy val bases: Set[Base] = Set(TerraMillsHydroFarm, HickesResearchOutpost, TramMyersMining)
   override val equatorialRadius: Length =  260 km
+  override val charter1Distance: Length = 64181 km
+  override val charter2Distance: Length = 70194 km
+  override val charter3Distance: Length = 76477 km
+  override val charter4Distance: Length = 8904 km
 }

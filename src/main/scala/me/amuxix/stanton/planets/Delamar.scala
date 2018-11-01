@@ -18,4 +18,8 @@ case object Delamar extends Planet with Atmosphere with Inhabited {
   override lazy val orbitedBy: Set[CelestialBody with Orbits] = Set.empty
   override lazy val bases: Set[Base] = Set(Levski)
   override val equatorialRadius: Length = 75 km
+  override val charter1Distance: Length = 916310 km
+  override val charter2Distance: Length = 854124 km
+  override val charter3Distance: Length = 831707 km
+  override val charter4Distance: Length = 899085 km
 }

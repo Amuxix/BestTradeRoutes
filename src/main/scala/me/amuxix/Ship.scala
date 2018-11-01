@@ -37,6 +37,7 @@ sealed class Ship(val shipCargoSize: Int, val speed: Velocity, size: Size = Medi
   val quantumDriveSpeed: Velocity = SpeedOfLight / 5
   private def quantumTravelTime(quantumDistance: QuantumDistance): Time =
     quantumDistance.jumps * quantumSetupTime + (quantumDistance.jumps - 1) * QuantumDistance.quantumDriveCooldown + quantumDistance.distance / quantumDriveSpeed
+
   private def flyingTravelTime(flyingDistance: FlyingDistance): Time = flyingDistance.distance / speed
   def timeToTravel(distance: Distance): Time = quantumTravelTime(distance.quantumDistance) + flyingTravelTime(distance.flyingDistance)
 }

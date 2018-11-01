@@ -7,9 +7,6 @@ abstract class System(val c1: Charter, val c2: Charter, val c3: Charter, val c4:
   def moons: Set[Moon]
   def spaceStations: Set[SpaceStation]
   lazy val celestialBodies: Set[CelestialBody] = Set(center) ++ planets ++ moons ++ spaceStations
-  /*val charters: Set[Charts] = celestialBodies.collect {
-    case charts: CelestialBody with Charts => charts
-  }*/
 
   lazy val bases: Set[Base] = celestialBodies.collect {
     case celestialBody: CelestialBody with Inhabited => celestialBody.bases
