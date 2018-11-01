@@ -2,7 +2,7 @@ package me.amuxix
 
 import me.amuxix.Base.tradingPosts
 import me.amuxix.Material.materials
-import me.amuxix.stanton._
+import me.amuxix.stanton.bases.PortOlisar
 
 import scala.annotation.tailrec
 import scala.collection.parallel.ParSeq
@@ -10,7 +10,7 @@ import scala.language.postfixOps
 
 object BestTradeRoutes {
   type Trade = (Material, UEC, Int)
-  type Jump = (TradingPost, Km, Option[Trade])
+  type Jump = (TradingPost, Distance, Option[Trade])
 
   val possibleDestinations: Map[TradingPost, ParSeq[TradingPost]] = tradingPosts.map { tradingPost =>
     tradingPost -> tradingPosts.filter(tradingPost.canTrade).toSeq.par

@@ -1,6 +1,6 @@
 package me.amuxix
 
-import me.amuxix.stanton._
+import me.amuxix.stanton.bases._
 
 object Conditions {
   def materialFilter(material: Material): Boolean = material.isLegal

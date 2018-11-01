@@ -1,11 +1,14 @@
 package me.amuxix
 
 import me.amuxix.BestTradeRoutes.{Trade, profitToTradingPosts}
+import me.amuxix.stanton.StantonSystem
+import squants.space.Length
+import squants.space.LengthConversions._
 
 import scala.language.postfixOps
 
 object Base {
-  val tradingPosts: Set[TradingPost] = stanton.tradingPosts.filter(Conditions.tradePostFilter)
+  val tradingPosts: Set[TradingPost] = StantonSystem.tradingPosts.filter(Conditions.tradePostFilter)
   val longestNameLength: Int = tradingPosts.map(_.toString.length).max
 }
 
@@ -13,37 +16,24 @@ abstract class Base {
   /**
     * The celestial body where this base is located.
     */
-  val celestialBody: CelestialBody
+  def celestialBody: CelestialBody
 
-  def distanceFromOrbit: Km = {
+  def distanceFromOrbit: Length = {
     celestialBody match {
-      case _: SpaceStation => 10 Km
-      case _ => 50 Km
+      case _: SpaceStation => 10 km
+      case _ => 60 km
     }
   }
 
-  lazy val parentOrbits: Seq[CelestialBody] = celestialBody.parentOrbits
-
-  def distanceTo(other: Base): Km =
+  def distanceTo(other: Base): Distance =
     if (this == other) {
-      0
+      Distance.Zero
     } else {
+      val flyingDistance = FlyingDistance(celestialBody.heightOfAtmosphere + other.distanceFromOrbit)
       if (celestialBody == other.celestialBody) {
-        celestialBody.heightOfAtmosphere + other.distanceFromOrbit
-      } else if (celestialBody.orbits(other.celestialBody)) {
-        // The celestial body where this base is located orbits the celestial body where the other base is located
-        celestialBody.heightOfAtmosphere + other.distanceFromOrbit + 1000
-      } else if (other.celestialBody.orbits(celestialBody)) {
-        // The celestial body where the other base is located orbits the celestial body where this base is located
-        other.celestialBody.heightOfAtmosphere + distanceFromOrbit + 1000
+        Distance(QuantumDistance.Zero, flyingDistance)
       } else {
-        (for {
-          lowestCommonAncestor <- parentOrbits.find(other.parentOrbits.contains)
-          lowestCommonAncestorChildren = lowestCommonAncestor.orbitedBy
-          nearestAncestorOfThis <- parentOrbits.find(lowestCommonAncestorChildren.contains)
-          nearestAncestorOfOther <- other.parentOrbits.find(lowestCommonAncestorChildren.contains)
-        } yield lowestCommonAncestor.distance(nearestAncestorOfThis, nearestAncestorOfOther))
-          .getOrElse(throw new Exception(s"Cannot calculate distance from $this to $other"))
+        Distance(celestialBody.distanceTo(other.celestialBody), flyingDistance)
       }
     }
 
@@ -80,7 +70,7 @@ abstract class TradingPost extends Base {
     def amountAndProfit(material: Material, unitaryProfit: Double) = {
       val cost = this.buy(material)
       val moneyBuys: Int = (investment.value / cost).toInt
-      val amountToBuy = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
+      val amountToBuy: Int = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
       val profit = UEC((amountToBuy * unitaryProfit).toInt)
       (amountToBuy, profit)
     }
@@ -99,4 +89,8 @@ abstract class TradingPost extends Base {
       case (previous, _) => previous
     }
   }
+}
+
+trait LandingPad {
+  val size: Size
 }
