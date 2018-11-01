@@ -18,4 +18,8 @@ case object Daymar extends Moon with Atmosphere with Inhabited {
   override lazy val orbitedBy: Set[CelestialBody with Orbits] = Set.empty
   override lazy val bases: Set[Base] = Set(ArcCorpMiningArea141, BountyfulHarvestHydroponics, ShubinMiningFacility)
   override val equatorialRadius: Length = 295 km
+  override val charter1Distance: Length = 99776 km
+  override val charter2Distance: Length = 42974 km
+  override val charter3Distance: Length = 53359 km
+  override val charter4Distance: Length = 107131 km
 }
