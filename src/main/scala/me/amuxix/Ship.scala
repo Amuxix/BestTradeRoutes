@@ -32,8 +32,13 @@ object Ship {
 
 sealed class Ship(val shipCargoSize: Int, val speed: Velocity, size: Size = Medium) {
   val cargoSizeInUnits: Int = shipCargoSize * 100
-  val calibrationPlusDriveSpoolTime: Time = 4 seconds
+  val quantumSetupTime: Time = 4 seconds
+  val quantumDriveCooldown: Time = 15 seconds
   val quantumDriveSpeed: Velocity = SpeedOfLight / 5
+  private def quantumTravelTime(quantumDistance: QuantumDistance): Time =
+    quantumDistance.jumps * quantumSetupTime + (quantumDistance.jumps - 1) * QuantumDistance.quantumDriveCooldown + quantumDistance.distance / quantumDriveSpeed
+  private def flyingTravelTime(flyingDistance: FlyingDistance): Time = flyingDistance.distance / speed
+  def timeToTravel(distance: Distance): Time = quantumTravelTime(distance.quantumDistance) + flyingTravelTime(distance.flyingDistance)
 }
 
 
