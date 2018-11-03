@@ -1,0 +1,11 @@
+@import logic.TradingPost
+@this(main: views.html.main)
+@(tradingPosts: Set[TradingPost])
+
+@row(tradingPost: TradingPost) = {
+    <a href="@routes.Application.prices(tradingPost.toString)" class="btn btn-outline-primary btn-lg btn-block" role="button" aria-pressed="true">@tradingPost.toString.replaceAll("([a-z])([A-Z0-9])", "$1 $2")</a>
+}
+
+@main("Trade route optimizer") {
+    @tradingPosts.map(row)
+}

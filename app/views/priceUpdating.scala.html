@@ -1,0 +1,61 @@
+@import logic.TradingPost
+@import logic.util.beautify
+@import model.PriceData
+@import play.twirl.api.HtmlFormat
+@this(main: views.html.main)
+@(tradingPost: TradingPost, buyForm: Form[Seq[PriceData]], sellForm: Form[Seq[PriceData]])(implicit request: MessagesRequestHeader)
+
+@row(material: Field, price: Field, classColor: String, index: Int) = {
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <input class="form-control @classColor disabled" type="text" name="@{material.name}" id="@{material.id}" value="@{material.value.map(beautify)}" tabindex="-1" readonly>
+        </div>
+        <input type="text" class="form-control @classColor" name="@{price.name}" id="@{price.id}" placeholder="@{price.value}" aria-label="@{price.value}"  tabindex=@index>
+    </div>
+}
+
+@fullRow(buy: Option[Html], sell: Option[Html]) = {
+    <div class="row mb-1">
+        @cell(buy)
+        @cell(sell)
+    </div>
+}
+
+@cell(h: Option[Html]) = {
+    <div class="col-6 px-1">
+        @h.getOrElse(HtmlFormat.empty)
+    </div>
+}
+
+@main("Price Updating") {
+    @helper.form(action = routes.Application.updatePrices(tradingPost.toString)) {
+        @* @CSRF.formField                     @* <- takes a RequestHeader    *@
+        <div class="container">
+            <div class="row mb-1">
+                <div class="col-6 px-1">
+                    <span class="btn btn-warning btn-block disabled">Buy</span>
+                </div>
+                <div class="col-6 px-1">
+                    <span class="btn btn-success btn-block disabled">Sell</span>
+                </div>
+            </div>
+            @{
+                val buy = helper.repeat(buyForm("prices")) { priceForm =>
+                    row(priceForm("material"), priceForm("price"), "btn-outline-warning", 1)
+                }.map(Some(_))
+                val sell = helper.repeat(sellForm("prices")) { priceForm =>
+                    row(priceForm("material"), priceForm("price"), "btn-outline-success", 2)
+                }.map(Some(_))
+                buy.zipAll(sell, None, None).map {
+                    case (buy, sell) =>
+                        fullRow(buy, sell)
+                }
+            }
+            <div class="row mt-2">
+                <div class="col-12 px-1">
+                    <button class="btn btn-secondary btn-block" tabindex=3 type="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    }
+}

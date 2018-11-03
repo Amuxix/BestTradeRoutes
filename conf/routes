@@ -1,0 +1,5 @@
+GET         /                           controllers.Application.index
+GET         /prices/:tradingPost        controllers.Application.prices(tradingPost)
+POST        /prices/:tradingPost        controllers.Application.updatePrices(tradingPost)
+
+->          /webjars                    webjars.Routes
