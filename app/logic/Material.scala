@@ -20,7 +20,7 @@ sealed trait Drug extends Material {
 
 
 object Material {
-  lazy val materials = Seq(Astatine,   Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
+  lazy val materials = Seq(Astatine, Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
     Diamond, Beryl, Laranite, ProcessedFood, Waste, Stims, DistilledSpirits, MedicalSupplies, Scrap, Alutruciatoxine, WiDoW)
 
   lazy val longestNameLength: Int = materials.map(_.toString.length).max

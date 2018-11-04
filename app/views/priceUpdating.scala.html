@@ -14,16 +14,15 @@
     </div>
 }
 
+@cell(h: Option[Html]) = {
+    <div class="col-6 px-1">
+        @h.getOrElse(HtmlFormat.empty)
+    </div>
+}
 @fullRow(buy: Option[Html], sell: Option[Html]) = {
     <div class="row mb-1">
         @cell(buy)
         @cell(sell)
-    </div>
-}
-
-@cell(h: Option[Html]) = {
-    <div class="col-6 px-1">
-        @h.getOrElse(HtmlFormat.empty)
     </div>
 }
 
@@ -53,7 +52,7 @@
             }
             <div class="row mt-2">
                 <div class="col-12 px-1">
-                    <button class="btn btn-secondary btn-block" tabindex=3 type="submit">Submit</button>
+                    <button class="btn btn-primary btn-block" tabindex=3 type="submit">Submit</button>
                 </div>
             </div>
         </div>
