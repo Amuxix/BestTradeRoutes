@@ -6,6 +6,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: StarcitizenTools
-      POSTGRES_PASSWORD: Q5[rg;uzXnyVvz@m98fzj+fYycuWc,
-      POSTGRES_DB: StarcitizenTools
+      POSTGRES_USER: starcitizen_tools
+      POSTGRES_PASSWORD: starcitizen_tools
+      POSTGRES_DB: starcitizen_tools

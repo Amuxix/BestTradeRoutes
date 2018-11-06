@@ -3,6 +3,7 @@ package logic
 import logic.BestTradeRoutes.{Trade, profitToTradingPosts}
 import logic.stanton.StantonSystem
 import logic.stanton.bases._
+import slick.lifted.MappedTo
 import squants.space.Length
 import squants.space.LengthConversions._
 
@@ -55,11 +56,13 @@ abstract class Base {
 /**
   * This represents a base that has a trade terminal that can buy and/or sell materials.
   */
-abstract class TradingPost extends Base {
+abstract class TradingPost extends Base/* with MappedTo[String]*/ {
   val buy: Map[Material, Double] //Materials you can buy at this base
   lazy val sold: Set[Material] = buy.keySet.filter(Conditions.materialFilter)
   val sell: Map[Material, Double] //materials you can sell at this base
   lazy val bought: Set[Material] = sell.keySet.filter(Conditions.materialFilter)
+
+  //override def value: String = toString
 
   def canTrade(other: TradingPost): Boolean = {
     this != other && buy.exists { case (material, _) =>

@@ -1,16 +1,24 @@
 @import logic.TradingPost
-@import logic.util.beautify
+@import logic.Material
 @import model.PriceData
 @import play.twirl.api.HtmlFormat
+@import helper._
 @this(main: views.html.main)
-@(tradingPost: TradingPost, buyForm: Form[Seq[PriceData]], sellForm: Form[Seq[PriceData]])(implicit request: MessagesRequestHeader)
+@(tradingPost: TradingPost, prices: Seq[PriceData])(implicit request: MessagesRequestHeader)
 
-@row(material: Field, price: Field, classColor: String, index: Int) = {
+@color(isBuy: Boolean) = {
+    border border-@{if (isBuy) "warning" else "success"} text text-@{if (isBuy) "warning" else "success"}
+}
+
+@row(material: Material, price: Double, isBuy: Boolean, id: Int) = {
+    <input type="hidden" name="prices[@id].material" id="prices@{id}_material" value="@{material.toString}" tabindex="-1" readonly>
+    <input type="hidden" name="prices[@id].is_buy" id="prices@{id}_is_buy" value="@isBuy" tabindex="-1" readonly>
+
     <div class="input-group">
-        <div class="input-group-prepend">
-            <input class="form-control @classColor disabled" type="text" name="@{material.name}" id="@{material.id}" value="@{material.value.map(beautify)}" tabindex="-1" readonly>
+        <div class="input-group-prepend col-4 p-0 rounded-left">
+            <span class="form-control input-group-text @color(isBuy) bg-white">@{material.displayName}</span>
         </div>
-        <input type="text" class="form-control @classColor" name="@{price.name}" id="@{price.id}" placeholder="@{price.value}" aria-label="@{price.value}"  tabindex=@index>
+        <input type="number" class="form-control @color(isBuy) text-dark col-8" name="prices[@id].price" id="prices_@{id}_price" placeholder="@price" aria-label="@price" tabindex=@{if (isBuy) 1 else 2}>
     </div>
 }
 
@@ -28,7 +36,7 @@
 
 @main("Price Updating") {
     @helper.form(action = routes.Application.updatePrices(tradingPost.toString)) {
-        @* @CSRF.formField                     @* <- takes a RequestHeader    *@
+        @CSRF.formField
         <div class="container">
             <div class="row mb-1">
                 <div class="col-6 px-1">
@@ -39,16 +47,16 @@
                 </div>
             </div>
             @{
-                val buy = helper.repeat(buyForm("prices")) { priceForm =>
-                    row(priceForm("material"), priceForm("price"), "btn-outline-warning", 1)
-                }.map(Some(_))
-                val sell = helper.repeat(sellForm("prices")) { priceForm =>
-                    row(priceForm("material"), priceForm("price"), "btn-outline-success", 2)
-                }.map(Some(_))
-                buy.zipAll(sell, None, None).map {
-                    case (buy, sell) =>
+                val p = prices
+                    .zipWithIndex
+                    .collect { case (PriceData(material, Some(price), isBuy), id) =>
+                       (isBuy, Some(row(material, price, isBuy, id)))
+                    }
+                p.collect { case (true, data) => data }
+                    .zipAll(p.collect { case (false, data) => data }, None, None)
+                    .map { case (buy, sell) =>
                         fullRow(buy, sell)
-                }
+                    }
             }
             <div class="row mt-2">
                 <div class="col-12 px-1">

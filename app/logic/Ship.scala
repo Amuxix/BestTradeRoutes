@@ -8,25 +8,25 @@ import squants.{Time, Velocity}
 import scala.language.postfixOps
 
 object Ship {
-  def fromString(shipName: String): Ship = s"$shipName$$" match {
-    case s if s.equalsIgnoreCase(`300i`.getClass.getSimpleName) => `300i`
-    case s if s.equalsIgnoreCase(`315p`.getClass.getSimpleName) => `315p`
-    case s if s.equalsIgnoreCase(`325a`.getClass.getSimpleName) => `325a`
-    case s if s.equalsIgnoreCase(F7CHornet.getClass.getSimpleName) => F7CHornet
-    case s if s.equalsIgnoreCase(MPUVCargo.getClass.getSimpleName) => MPUVCargo
-    case s if s.equalsIgnoreCase(ReliantKore.getClass.getSimpleName) => ReliantKore
-    case s if s.equalsIgnoreCase(AuroraCL.getClass.getSimpleName) => AuroraCL
-    case s if s.equalsIgnoreCase(MustangAlpha.getClass.getSimpleName) => MustangAlpha
-    case s if s.equalsIgnoreCase(AvengerTitan.getClass.getSimpleName) => AvengerTitan
-    case s if s.equalsIgnoreCase(AvengerTitanRenegade.getClass.getSimpleName) => AvengerTitanRenegade
-    case s if s.equalsIgnoreCase(CutlassBlack.getClass.getSimpleName) => CutlassBlack
-    case s if s.equalsIgnoreCase(Freelancer.getClass.getSimpleName) => Freelancer
-    case s if s.equalsIgnoreCase(ConstellationAndromeda.getClass.getSimpleName) => ConstellationAndromeda
-    case s if s.equalsIgnoreCase(ConstellationAquila.getClass.getSimpleName) => ConstellationAquila
-    case s if s.equalsIgnoreCase(Starfarer.getClass.getSimpleName) => Starfarer
-    case s if s.equalsIgnoreCase(StarfarerGemini.getClass.getSimpleName) => StarfarerGemini
-    case s if s.equalsIgnoreCase(Caterpillar.getClass.getSimpleName) => Caterpillar
-    case s if s.equalsIgnoreCase(CaterpillarPirateEdition.getClass.getSimpleName) => CaterpillarPirateEdition
+  def fromString(shipName: String): Ship = shipName match {
+    case s if s.equalsIgnoreCase(`300i`.toString) => `300i`
+    case s if s.equalsIgnoreCase(`315p`.toString) => `315p`
+    case s if s.equalsIgnoreCase(`325a`.toString) => `325a`
+    case s if s.equalsIgnoreCase(F7CHornet.toString) => F7CHornet
+    case s if s.equalsIgnoreCase(MPUVCargo.toString) => MPUVCargo
+    case s if s.equalsIgnoreCase(ReliantKore.toString) => ReliantKore
+    case s if s.equalsIgnoreCase(AuroraCL.toString) => AuroraCL
+    case s if s.equalsIgnoreCase(MustangAlpha.toString) => MustangAlpha
+    case s if s.equalsIgnoreCase(AvengerTitan.toString) => AvengerTitan
+    case s if s.equalsIgnoreCase(AvengerTitanRenegade.toString) => AvengerTitanRenegade
+    case s if s.equalsIgnoreCase(CutlassBlack.toString) => CutlassBlack
+    case s if s.equalsIgnoreCase(Freelancer.toString) => Freelancer
+    case s if s.equalsIgnoreCase(ConstellationAndromeda.toString) => ConstellationAndromeda
+    case s if s.equalsIgnoreCase(ConstellationAquila.toString) => ConstellationAquila
+    case s if s.equalsIgnoreCase(Starfarer.toString) => Starfarer
+    case s if s.equalsIgnoreCase(StarfarerGemini.toString) => StarfarerGemini
+    case s if s.equalsIgnoreCase(Caterpillar.toString) => Caterpillar
+    case s if s.equalsIgnoreCase(CaterpillarPirateEdition.toString) => CaterpillarPirateEdition
   }
 }
 
