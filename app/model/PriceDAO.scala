@@ -1,5 +1,7 @@
 package model
 
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.NoSuchElementException
 
 import javax.inject.{Inject, Singleton}
@@ -28,12 +30,13 @@ class PriceDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
     def material = column[Material]("material")
     def price = column[Double]("price")
     def isBuy = column[Boolean]("is_buy")
+    def updatedAt = column[Timestamp]("updated_at")
 
     override def * = (
       tradingPost,
       material,
       price,
-      isBuy
+      isBuy,
     ) <> (Price.tupled, Price.unapply)
   }
 
@@ -68,8 +71,8 @@ class PriceDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
             .filter(_.tradingPost === tradingPost)
             .filter(_.isBuy === isBuy)
             .filter(_.material === material)
-            .map(_.price)
-            .update(price)
+            .map(p => (p.price, p.updatedAt))
+            .update((price, Timestamp.from(Instant.now)))
         )
       }
     )
