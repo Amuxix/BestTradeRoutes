@@ -40,19 +40,38 @@ object Prices extends PostgresProfile {
 
   private val prices = TableQuery[PriceTable]
 
-  private def getMaterialPrices(tradingPost: TradingPost, isBuy: Boolean): Future[Map[Material, Double]] =
-    db.run(
+  private def materialsPrices(tradingPost: TradingPost, isBuy: Boolean): DBIO[Seq[Price]] =
       prices
         .filter(_.tradingPost === tradingPost)
         .filter(_.isBuy === isBuy)
         .result
-    ).map(_.map(price => price.material -> price.price).toMap)
+
+  private def pricesMap(tradingPost: TradingPost, isBuy: Boolean): Future[Map[Material, Double]] =
+    db.run(materialsPrices(tradingPost, isBuy))
+      .map(_.map(price => price.material -> price.price).toMap)
 
   def buyPrices(tradingPost: TradingPost): Future[Map[Material, Double]] =
-    getMaterialPrices(tradingPost, isBuy = true)
+    pricesMap(tradingPost, isBuy = true)
 
   def sellPrices(tradingPost: TradingPost): Future[Map[Material, Double]] =
-    getMaterialPrices(tradingPost, isBuy = false)
+    pricesMap(tradingPost, isBuy = false)
+
+  private def price(tradingPost: TradingPost, material: Material, isBuy: Boolean): Future[Double] =
+    db.run(
+      prices
+        .filter(_.tradingPost === tradingPost)
+        .filter(_.isBuy === isBuy)
+        .filter(_.material === material)
+        .map(_.price)
+        .result
+        .head
+    )
+
+  def buyPrice(tradingPost: TradingPost, material: Material): Future[Double] =
+    price(tradingPost, material, isBuy = true)
+
+  def sellPrice(tradingPost: TradingPost, material: Material): Future[Double] =
+    price(tradingPost, material, isBuy = false)
 
   def allFor(tradingPost: TradingPost): Future[Seq[Price]] =
     db.run(
@@ -69,8 +88,10 @@ object Prices extends PostgresProfile {
       .map(p => (p.price, p.updatedAt))
       .update((newPrice.price, Timestamp.from(Instant.now)))
 
-  def updatePrices(newPrices: Seq[Price]): Future[Seq[Int]] =
-    db.run(DBIO.sequence(newPrices.map(update)))
+  def updatePrices(newPrices: Seq[Price]): Future[Seq[Int]] = {
+    Future.sequence(newPrices.map(p => db.run(update(p))))
+  }
+    //db.run(DBIO.sequence(newPrices.map(update)))
 
   def insertAll(newPrices: Seq[Price]): Future[Option[Int]] =
     db.run(prices ++= newPrices)

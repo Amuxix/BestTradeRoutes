@@ -20,8 +20,8 @@ object BestTradeRoutes {
     tradingPosts.flatMap { base =>
       tradingPosts.map { nextTradingPost =>
         val profits: Seq[(Material, Option[Double])] = materials.map {
-          case material if base.buy.contains(material) && nextTradingPost.sell.contains(material) =>
-            (material, Some(nextTradingPost.sell(material) - base.buy(material)))
+          case material if base.buys.contains(material) && nextTradingPost.sells.contains(material) =>
+            (material, Some(nextTradingPost.sellPrice(material) - base.buyPrice(material)))
           case material =>
             (material, None)
         }

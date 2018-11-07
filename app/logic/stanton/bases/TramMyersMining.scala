@@ -5,4 +5,19 @@ import logic.{Aluminum, Alutruciatoxine, CelestialBody, Corundum, Diamond, Disti
 
 case object TramMyersMining extends TradingPost {
   override lazy val celestialBody: CelestialBody = Cellin
+  override val buys: Set[Material] = Set(
+    Aluminum,
+    Corundum,
+    Diamond,
+    Laranite,
+    Titanium,
+  )
+  override val sells: Set[Material] = Set(
+    Alutruciatoxine,
+    DistilledSpirits,
+    MedicalSupplies,
+    ProcessedFood,
+    Stims,
+    WiDoW,
+  )
 }

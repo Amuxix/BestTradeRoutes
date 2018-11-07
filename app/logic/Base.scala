@@ -60,20 +60,20 @@ abstract class Base {
   * This represents a base that has a trade terminal that can buy and/or sell materials.
   */
 abstract class TradingPost extends Base {
-  final lazy val buy: Map[Material, Double] = Await.result(Prices.buyPrices(this), Duration.Inf) //Materials you can buy at this base
-  lazy val sold: Set[Material] = buy.keySet.filter(Conditions.materialFilter)
-  final lazy val sell: Map[Material, Double] = Await.result(Prices.sellPrices(this), Duration.Inf) //materials you can sell at this base
-  lazy val bought: Set[Material] = sell.keySet.filter(Conditions.materialFilter)
+  def buyPrice(material: Material): Double = Await.result(Prices.buyPrice(this, material), Duration.Inf)
+  def sellPrice(material: Material): Double = Await.result(Prices.sellPrice(this, material), Duration.Inf)
+  val buys: Set[Material]
+  val sells: Set[Material]
 
   def canTrade(other: TradingPost): Boolean = {
-    this != other && buy.exists { case (material, _) =>
-      Conditions.materialFilter(material) && other.sell.contains(material)
+    this != other && buys.exists { material =>
+      Conditions.materialFilter(material) && other.sells.contains(material)
     }
   }
 
   def bestProfit(other: TradingPost, ship: Ship, investment: UEC): Option[Trade] = {
     def amountAndProfit(material: Material, unitaryProfit: Double) = {
-      val cost = this.buy(material)
+      val cost = this.buyPrice(material)
       val moneyBuys: Int = (investment.value / cost).toInt
       val amountToBuy: Int = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
       val profit = UEC((amountToBuy * unitaryProfit).toInt)

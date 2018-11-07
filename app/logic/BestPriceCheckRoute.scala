@@ -8,9 +8,9 @@ import scala.language.postfixOps
 object BestPriceCheckRoute {
   type PriceCheckMap = Map[TradingPost, Set[Material]]
 
-  val tradingPostsToCheck: Seq[TradingPost] = tradingPosts.toSeq.sortBy(tradingPost => (tradingPost.bought.size, -tradingPost.sold.size))
+  val tradingPostsToCheck: Seq[TradingPost] = tradingPosts.toSeq.sortBy(tradingPost => (tradingPost.sells.size, -tradingPost.buys.size))
   val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
-    prices + tradingPost.sold.size + tradingPost.bought.size
+    prices + tradingPost.buys.size + tradingPost.sells.size
   )
 
   val startingBase: TradingPost = GrimHex
@@ -45,24 +45,24 @@ object BestPriceCheckRoute {
       }
     }
     val buyPriceCheckMap: PriceCheckMap = (knownBases :+ startingBase).map { base =>
-      base -> base.sold
+      base -> base.buys
     }.toMap
     val sellPriceCheckMap: PriceCheckMap = knownBases.map { base =>
-      base -> base.bought
+      base -> base.sells
     }.toMap
     tradingPostsToCheck.par.foreach { tradingPost =>
       val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) =
-        updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, startingBase.sold)
+        updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, startingBase.buys)
       look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, Seq(startingBase, tradingPost), startingBase.distanceTo(tradingPost))
     }
   }
 
   def updatePriceCheckMaps(tradingPost: TradingPost, buyPriceCheckMap: PriceCheckMap, sellPriceCheckMap: PriceCheckMap, materialsInHull: Set[Material]): (PriceCheckMap, PriceCheckMap, Set[Material], Int) = {
-    val updatedBuyPriceCheckMap = buyPriceCheckMap.updated(tradingPost, tradingPost.sold)
+    val updatedBuyPriceCheckMap = buyPriceCheckMap.updated(tradingPost, tradingPost.buys)
 
-    val updatedMaterialsInHull = materialsInHull ++ tradingPost.sold
+    val updatedMaterialsInHull = materialsInHull ++ tradingPost.buys
 
-    val updatedSellPriceCheckMap = sellPriceCheckMap.updated(tradingPost, tradingPost.bought intersect updatedMaterialsInHull)
+    val updatedSellPriceCheckMap = sellPriceCheckMap.updated(tradingPost, tradingPost.sells intersect updatedMaterialsInHull)
     val pricesChecked = updatedBuyPriceCheckMap.foldLeft(0)(_ + _._2.size) + updatedSellPriceCheckMap.foldLeft(0)(_ + _._2.size)
     (updatedBuyPriceCheckMap, updatedSellPriceCheckMap, updatedMaterialsInHull, pricesChecked)
   }

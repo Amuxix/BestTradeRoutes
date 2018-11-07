@@ -70,10 +70,10 @@ class Application @Inject()(
   def populate(): Action[AnyContent] = Action.async {
     Future.sequence(
       StantonSystem.tradingPosts.map { tradingPost =>
-        val buy = tradingPost.buy.map { case (material, price) =>
+        val buy = tradingPost.buyPrice.map { case (material, price) =>
           Price(tradingPost, material, price, isBuy = true)
         }.toSeq
-        val sell = tradingPost.sell.map { case (material, price) =>
+        val sell = tradingPost.sellPrice.map { case (material, price) =>
           Price(tradingPost, material, price, isBuy = false)
         }.toSeq
         Prices.insertAll(buy ++ sell)

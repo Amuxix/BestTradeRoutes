@@ -28,7 +28,7 @@ object Material extends FindByName[Material] {
 
   lazy val longestNameLength: Int = materials.map(_.toString.length).max
 
-  override val values: Seq[Material] = materials
+  override lazy val values: Seq[Material] = materials
 }
 
 case object Astatine extends Gas

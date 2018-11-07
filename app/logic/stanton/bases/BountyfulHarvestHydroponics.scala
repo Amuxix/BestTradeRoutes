@@ -5,5 +5,14 @@ import logic.{AgricultureSupplies, CelestialBody, DistilledSpirits, Material, Me
 
 case object BountyfulHarvestHydroponics extends TradingPost {
   override lazy val celestialBody: CelestialBody = Daymar
+  override val buys: Set[Material] = Set(
+    DistilledSpirits,
+    ProcessedFood,
+    Stims,
+  )
+  override val sells: Set[Material] = Set(
+    AgricultureSupplies,
+    MedicalSupplies,
+  )
 }
 

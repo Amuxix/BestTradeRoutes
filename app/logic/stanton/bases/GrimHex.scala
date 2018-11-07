@@ -5,4 +5,31 @@ import logic.{Agricium, Aluminum, Alutruciatoxine, Astatine, Beryl, CelestialBod
 
 case object GrimHex extends TradingPost {
   override lazy val celestialBody: CelestialBody = stations.GrimHex
+  override val buys: Set[Material] = Set(
+    Agricium,
+    Diamond,
+    Gold,
+    Laranite,
+    Scrap,
+  )
+  override val sells: Set[Material] = Set(
+    Aluminum,
+    Alutruciatoxine,
+    Astatine,
+    Beryl,
+    Chlorine,
+    Corundum,
+    DistilledSpirits,
+    Fluorine,
+    Hydrogen,
+    Iodine,
+    MedicalSupplies,
+    ProcessedFood,
+    Quartz,
+    Stims,
+    Titanium,
+    Tungsten,
+    Waste,
+    WiDoW,
+  )
 }
