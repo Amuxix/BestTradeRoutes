@@ -3,10 +3,13 @@ package logic
 import logic.BestTradeRoutes.{Trade, profitToTradingPosts}
 import logic.stanton.StantonSystem
 import logic.stanton.bases._
-import slick.lifted.MappedTo
+import logic.util.FindByName
+import model.Prices
 import squants.space.Length
 import squants.space.LengthConversions._
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 import scala.language.postfixOps
 
 object Base {
@@ -56,13 +59,11 @@ abstract class Base {
 /**
   * This represents a base that has a trade terminal that can buy and/or sell materials.
   */
-abstract class TradingPost extends Base/* with MappedTo[String]*/ {
-  val buy: Map[Material, Double] //Materials you can buy at this base
+abstract class TradingPost extends Base {
+  final lazy val buy: Map[Material, Double] = Await.result(Prices.buyPrices(this), Duration.Inf) //Materials you can buy at this base
   lazy val sold: Set[Material] = buy.keySet.filter(Conditions.materialFilter)
-  val sell: Map[Material, Double] //materials you can sell at this base
+  final lazy val sell: Map[Material, Double] = Await.result(Prices.sellPrices(this), Duration.Inf) //materials you can sell at this base
   lazy val bought: Set[Material] = sell.keySet.filter(Conditions.materialFilter)
-
-  //override def value: String = toString
 
   def canTrade(other: TradingPost): Boolean = {
     this != other && buy.exists { case (material, _) =>
@@ -95,24 +96,23 @@ abstract class TradingPost extends Base/* with MappedTo[String]*/ {
   }
 }
 
-object TradingPost {
-  def findByName(tradingPost: String): Option[TradingPost] = tradingPost match {
-    case s if s.equalsIgnoreCase(ArcCorpMiningArea141.toString) => Some(ArcCorpMiningArea141)
-    case s if s.equalsIgnoreCase(ArcCorpMiningArea157.toString) => Some(ArcCorpMiningArea157)
-    case s if s.equalsIgnoreCase(BensonMiningOutpost.toString) => Some(BensonMiningOutpost)
-    case s if s.equalsIgnoreCase(BountyfulHarvestHydroponics.toString) => Some(BountyfulHarvestHydroponics)
-    case s if s.equalsIgnoreCase(DeakingReaserchOutpost.toString) => Some(DeakingReaserchOutpost)
-    case s if s.equalsIgnoreCase(DrugLab.toString) => Some(DrugLab)
-    case s if s.equalsIgnoreCase(GaletteFamilyFarms.toString) => Some(GaletteFamilyFarms)
-    case s if s.equalsIgnoreCase(GrimHex.toString) => Some(GrimHex)
-    case s if s.equalsIgnoreCase(HickesResearchOutpost.toString) => Some(HickesResearchOutpost)
-    case s if s.equalsIgnoreCase(Levski.toString) => Some(Levski)
-    case s if s.equalsIgnoreCase(PortOlisar.toString) => Some(PortOlisar)
-    case s if s.equalsIgnoreCase(ShubinMiningFacility.toString) => Some(ShubinMiningFacility)
-    case s if s.equalsIgnoreCase(TerraMillsHydroFarm.toString) => Some(TerraMillsHydroFarm)
-    case s if s.equalsIgnoreCase(TramMyersMining.toString) => Some(TramMyersMining)
-    case _ => None
-  }
+object TradingPost extends FindByName[TradingPost] {
+  override val values: Seq[TradingPost] = Seq(
+    ArcCorpMiningArea141,
+    ArcCorpMiningArea157,
+    BensonMiningOutpost,
+    BountyfulHarvestHydroponics,
+    DeakingReaserchOutpost,
+    Jumptown,
+    GaletteFamilyFarms,
+    GrimHex,
+    HickesResearchOutpost,
+    Levski,
+    PortOlisar,
+    ShubinMiningFacility,
+    TerraMillsHydroFarm,
+    TramMyersMining,
+  )
 }
 
 trait LandingPad {

@@ -1,5 +1,6 @@
 package logic
 
+import logic.util.FindByName
 import squants.motion.SpeedOfLight
 import squants.motion.VelocityConversions._
 import squants.time.TimeConversions._
@@ -7,27 +8,27 @@ import squants.{Time, Velocity}
 
 import scala.language.postfixOps
 
-object Ship {
-  def fromString(shipName: String): Ship = shipName match {
-    case s if s.equalsIgnoreCase(`300i`.toString) => `300i`
-    case s if s.equalsIgnoreCase(`315p`.toString) => `315p`
-    case s if s.equalsIgnoreCase(`325a`.toString) => `325a`
-    case s if s.equalsIgnoreCase(F7CHornet.toString) => F7CHornet
-    case s if s.equalsIgnoreCase(MPUVCargo.toString) => MPUVCargo
-    case s if s.equalsIgnoreCase(ReliantKore.toString) => ReliantKore
-    case s if s.equalsIgnoreCase(AuroraCL.toString) => AuroraCL
-    case s if s.equalsIgnoreCase(MustangAlpha.toString) => MustangAlpha
-    case s if s.equalsIgnoreCase(AvengerTitan.toString) => AvengerTitan
-    case s if s.equalsIgnoreCase(AvengerTitanRenegade.toString) => AvengerTitanRenegade
-    case s if s.equalsIgnoreCase(CutlassBlack.toString) => CutlassBlack
-    case s if s.equalsIgnoreCase(Freelancer.toString) => Freelancer
-    case s if s.equalsIgnoreCase(ConstellationAndromeda.toString) => ConstellationAndromeda
-    case s if s.equalsIgnoreCase(ConstellationAquila.toString) => ConstellationAquila
-    case s if s.equalsIgnoreCase(Starfarer.toString) => Starfarer
-    case s if s.equalsIgnoreCase(StarfarerGemini.toString) => StarfarerGemini
-    case s if s.equalsIgnoreCase(Caterpillar.toString) => Caterpillar
-    case s if s.equalsIgnoreCase(CaterpillarPirateEdition.toString) => CaterpillarPirateEdition
-  }
+object Ship extends FindByName[Ship] {
+  override val values: Seq[Ship] = Seq(
+    `300i`,
+    `315p`,
+    `325a`,
+    F7CHornet,
+    MPUVCargo,
+    ReliantKore,
+    AuroraCL,
+    MustangAlpha,
+    AvengerTitan,
+    AvengerTitanRenegade,
+    CutlassBlack,
+    Freelancer,
+    ConstellationAndromeda,
+    ConstellationAquila,
+    Starfarer,
+    StarfarerGemini,
+    Caterpillar,
+    CaterpillarPirateEdition,
+  )
 }
 
 sealed class Ship(val shipCargoSize: Int, val speed: Velocity, size: Size = Medium) {

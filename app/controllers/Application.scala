@@ -4,14 +4,12 @@ import javax.inject.Inject
 import logic.stanton.StantonSystem
 import logic.{Material, TradingPost}
 import model.PriceData.materialFormat
-import model.{Price, PriceDAO, PriceData}
+import model.{Price, Prices, PriceData}
 import play.Logger
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.format.Formats._
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.mvc._
-import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,9 +18,7 @@ class Application @Inject()(
   components: MessagesControllerComponents,
   priceUpdating: views.html.priceUpdating,
   tradingPostPicker: views.html.tradingPostPicker,
-  prices: PriceDAO,
-  val dbConfigProvider: DatabaseConfigProvider,
-)(implicit exec: ExecutionContext) extends MessagesAbstractController(components) with HasDatabaseConfigProvider[JdbcProfile]{
+)(implicit exec: ExecutionContext) extends MessagesAbstractController(components) {
   val priceForm: Form[Seq[PriceData]] = Form(
     mapping(
       "prices" -> seq(mapping(
@@ -43,13 +39,13 @@ class Application @Inject()(
       Future.successful(BadRequest(tradingPostPicker(StantonSystem.tradingPosts)))
     } {
       tradingPost =>
-        prices.allFor(tradingPost).map(_.map(_.toPriceData)).map { allPrices =>
+        Prices.allFor(tradingPost).map(_.map(_.toPriceData)).map { allPrices =>
           Ok(priceUpdating(tradingPost, allPrices))
         }
     }
   }
 
-  def updatePrices(tradingPostName: String) = Action.async { implicit request =>
+  def updatePrices(tradingPostName: String): Action[AnyContent] = Action.async { implicit request =>
     priceForm.bindFromRequest.fold(
       { errors =>
         Logger.info(errors.errors.toString)
@@ -63,7 +59,7 @@ class Application @Inject()(
           newPrices.foreach { price =>
             Logger.info(s"${price.material.displayName} ${if (price.isBuy) "buy" else "sell"} price is now ${price.price}")
           }
-          prices.updatePrices(newPrices).map(_ =>
+          Prices.updatePrices(newPrices).map(_ =>
             Redirect(routes.Application.prices(tradingPostName))
           )
         }
@@ -71,7 +67,7 @@ class Application @Inject()(
     )
   }
 
-  def populate() = Action.async {
+  def populate(): Action[AnyContent] = Action.async {
     Future.sequence(
       StantonSystem.tradingPosts.map { tradingPost =>
         val buy = tradingPost.buy.map { case (material, price) =>
@@ -80,7 +76,7 @@ class Application @Inject()(
         val sell = tradingPost.sell.map { case (material, price) =>
           Price(tradingPost, material, price, isBuy = false)
         }.toSeq
-        prices.insertAll(buy ++ sell)
+        Prices.insertAll(buy ++ sell)
       }
     ).map { _=>
       Ok(tradingPostPicker(StantonSystem.tradingPosts))

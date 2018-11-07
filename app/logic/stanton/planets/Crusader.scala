@@ -13,7 +13,7 @@ import scala.language.postfixOps
 case object Crusader extends Planet {
   override lazy val system: System = StantonSystem
 
-  override val equatorialRadius: Length = 19086.1 km
+  override val equatorialRadius: Length = 7450 km
   override val gravity: G = 0 G
 
   override lazy val orbits: Option[CelestialBody] = Some(Stanton)

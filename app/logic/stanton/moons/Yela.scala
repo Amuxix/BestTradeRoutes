@@ -17,7 +17,7 @@ case object Yela extends Moon with Atmosphere with Inhabited {
   override val atmosphereHeight: Length = 31 km
   override lazy val orbits: Option[CelestialBody] = Some(Crusader)
   override lazy val orbitedBy: Set[CelestialBody with Orbits] = Set(GrimHex)
-  override lazy val bases: Set[Base] = Set(ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, DrugLab)
+  override lazy val bases: Set[Base] = Set(ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost, Jumptown)
   override val equatorialRadius: Length = 313 km
   override val charter1Distance: Length = 128246 km
   override val charter2Distance: Length = 68397 km

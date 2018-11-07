@@ -31,7 +31,7 @@ object BestTradeRoutes {
 
   def main(args: Array[String]): Unit = {
     require(args.length == 4, "Please specify ship, initial investment, investment penetration and lookahead.")
-    val ship = Ship.fromString(args.head)
+    val ship = Ship.findByName(args.head).getOrElse(throw new IllegalArgumentException(s"Invalid ship ${args.head}"))
     val initialInvestment: UEC = UEC((args(1).toDouble * 1000).toInt)
     val penetration: Double = args(2).toDouble / 100
     val lookahead = args(3).toInt
