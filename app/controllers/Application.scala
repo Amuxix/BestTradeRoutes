@@ -4,7 +4,7 @@ import javax.inject.Inject
 import logic.stanton.StantonSystem
 import logic.{Material, TradingPost}
 import model.PriceData.materialFormat
-import model.{Price, Prices, PriceData}
+import model.{PriceData, Prices}
 import play.Logger
 import play.api.data.Form
 import play.api.data.Forms._
@@ -65,21 +65,5 @@ class Application @Inject()(
         }
       }
     )
-  }
-
-  def populate(): Action[AnyContent] = Action.async {
-    Future.sequence(
-      StantonSystem.tradingPosts.map { tradingPost =>
-        val buy = tradingPost.buyPrice.map { case (material, price) =>
-          Price(tradingPost, material, price, isBuy = true)
-        }.toSeq
-        val sell = tradingPost.sellPrice.map { case (material, price) =>
-          Price(tradingPost, material, price, isBuy = false)
-        }.toSeq
-        Prices.insertAll(buy ++ sell)
-      }
-    ).map { _=>
-      Ok(tradingPostPicker(StantonSystem.tradingPosts))
-    }
   }
 }

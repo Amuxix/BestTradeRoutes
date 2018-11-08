@@ -73,7 +73,7 @@ abstract class TradingPost extends Base {
 
   def bestProfit(other: TradingPost, ship: Ship, investment: UEC): Option[Trade] = {
     def amountAndProfit(material: Material, unitaryProfit: Double) = {
-      val cost = this.buyPrice(material)
+      val cost = buyPrice(material)
       val moneyBuys: Int = (investment.value / cost).toInt
       val amountToBuy: Int = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
       val profit = UEC((amountToBuy * unitaryProfit).toInt)

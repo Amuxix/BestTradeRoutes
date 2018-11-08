@@ -37,31 +37,29 @@
 @main("Price Updating") {
     @helper.form(action = routes.Application.updatePrices(tradingPost.toString)) {
         @CSRF.formField
-        <div class="container">
-            <div class="row mb-1">
-                <div class="col-6 px-1">
-                    <span class="btn btn-warning btn-block disabled">Buy</span>
-                </div>
-                <div class="col-6 px-1">
-                    <span class="btn btn-success btn-block disabled">Sell</span>
-                </div>
+        <div class="row mb-1">
+            <div class="col-6 px-1">
+                <span class="btn btn-warning btn-block disabled">Buy</span>
             </div>
-            @{
-                val p = prices
-                    .zipWithIndex
-                    .collect { case (PriceData(material, Some(price), isBuy), id) =>
-                       (isBuy, Some(row(material, price, isBuy, id)))
-                    }
-                p.collect { case (true, data) => data }
-                    .zipAll(p.collect { case (false, data) => data }, None, None)
-                    .map { case (buy, sell) =>
-                        fullRow(buy, sell)
-                    }
-            }
-            <div class="row mt-2">
-                <div class="col-12 px-1">
-                    <button class="btn btn-primary btn-block" tabindex=3 type="submit">Submit</button>
-                </div>
+            <div class="col-6 px-1">
+                <span class="btn btn-success btn-block disabled">Sell</span>
+            </div>
+        </div>
+        @{
+            val p = prices
+                .zipWithIndex
+                .collect { case (PriceData(material, Some(price), isBuy), id) =>
+                   (isBuy, Some(row(material, price, isBuy, id)))
+                }
+            p.collect { case (true, data) => data }
+                .zipAll(p.collect { case (false, data) => data }, None, None)
+                .map { case (buy, sell) =>
+                    fullRow(buy, sell)
+                }
+        }
+        <div class="row mt-2">
+            <div class="col-12 px-1">
+                <button class="btn btn-primary btn-block" tabindex=3 type="submit">Submit</button>
             </div>
         </div>
     }
