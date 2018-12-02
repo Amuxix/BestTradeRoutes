@@ -1,8 +1,6 @@
 package logic
 
 import logic.BestTradeRoutes.{Trade, profitToTradingPosts}
-import logic.stanton.StantonSystem
-import logic.stanton.bases._
 import logic.util.FindByName
 import model.Prices
 import squants.space.Length
@@ -13,8 +11,8 @@ import scala.concurrent.duration.Duration
 import scala.language.postfixOps
 
 object Base {
-  val tradingPosts: Set[TradingPost] = StantonSystem.tradingPosts.filter(Conditions.tradePostFilter)
-  val longestNameLength: Int = tradingPosts.map(_.toString.length).max
+  val filteredTradingPosts: Set[TradingPost] = Universe.tradingPosts.filter(Conditions.tradePostFilter)
+  val longestNameLength: Int = Universe.tradingPosts.filter(Conditions.tradePostFilter).map(_.toString.length).max
 }
 
 abstract class Base {
@@ -97,22 +95,7 @@ abstract class TradingPost extends Base {
 }
 
 object TradingPost extends FindByName[TradingPost] {
-  override val values: Seq[TradingPost] = Seq(
-    ArcCorpMiningArea141,
-    ArcCorpMiningArea157,
-    BensonMiningOutpost,
-    BountyfulHarvestHydroponics,
-    DeakingReaserchOutpost,
-    Jumptown,
-    GaletteFamilyFarms,
-    GrimHex,
-    HickesResearchOutpost,
-    Levski,
-    PortOlisar,
-    ShubinMiningFacility,
-    TerraMillsHydroFarm,
-    TramMyersMining,
-  )
+  override lazy val values: Set[TradingPost] = Universe.tradingPosts
 }
 
 trait LandingPad {

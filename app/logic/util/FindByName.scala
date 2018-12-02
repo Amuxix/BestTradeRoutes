@@ -1,7 +1,7 @@
 package logic.util
 
 trait FindByName[T] {
-  val values: Seq[T]
+  val values: Set[T]
 
   private lazy val map = values.map { value =>
     value.toString.toUpperCase -> value

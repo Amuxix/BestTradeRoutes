@@ -35,7 +35,7 @@
 }
 
 @main("Price Updating") {
-    @helper.form(action = routes.Application.updatePrices(tradingPost.toString)) {
+    @helper.form(action = routes.PriceUpdating.updatePrices(tradingPost.toString)) {
         @CSRF.formField
         <div class="row mb-1">
             <div class="col-6 px-1">

@@ -1,6 +1,6 @@
 package logic
 
-import logic.Base.tradingPosts
+import logic.Base.filteredTradingPosts
 import logic.stanton.bases._
 
 import scala.language.postfixOps
@@ -8,7 +8,7 @@ import scala.language.postfixOps
 object BestPriceCheckRoute {
   type PriceCheckMap = Map[TradingPost, Set[Material]]
 
-  val tradingPostsToCheck: Seq[TradingPost] = tradingPosts.toSeq.sortBy(tradingPost => (tradingPost.sells.size, -tradingPost.buys.size))
+  val tradingPostsToCheck: Seq[TradingPost] = filteredTradingPosts.toSeq.sortBy(tradingPost => (tradingPost.sells.size, -tradingPost.buys.size))
   val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
     prices + tradingPost.buys.size + tradingPost.sells.size
   )

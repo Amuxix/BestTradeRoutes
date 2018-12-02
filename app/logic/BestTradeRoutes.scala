@@ -1,6 +1,6 @@
 package logic
 
-import logic.Base.tradingPosts
+import logic.Base.filteredTradingPosts
 import logic.Material.materials
 import logic.stanton.bases.PortOlisar
 
@@ -12,19 +12,19 @@ object BestTradeRoutes {
   type Trade = (Material, UEC, Int)
   type Jump = (TradingPost, Distance, Option[Trade])
 
-  val possibleDestinations: Map[TradingPost, ParSeq[TradingPost]] = tradingPosts.map { tradingPost =>
-    tradingPost -> tradingPosts.filter(tradingPost.canTrade).toSeq.par
+  val possibleDestinations: Map[TradingPost, ParSeq[TradingPost]] = filteredTradingPosts.map { tradingPost =>
+    tradingPost -> filteredTradingPosts.filter(tradingPost.canTrade).toSeq.par
   }.toMap
 
   val profitToTradingPosts: Map[(TradingPost, TradingPost), Seq[(Material, Option[Double])]] =
-    tradingPosts.flatMap { tradingPost =>
-      tradingPosts.map { nextTradingPost =>
+    filteredTradingPosts.flatMap { tradingPost =>
+      filteredTradingPosts.map { nextTradingPost =>
         val profits: Seq[(Material, Option[Double])] = materials.map {
           case material if tradingPost.buys.contains(material) && nextTradingPost.sells.contains(material) =>
             (material, Some(nextTradingPost.sellPrice(material) - tradingPost.buyPrice(material)))
           case material =>
             (material, None)
-        }
+        }.toSeq
         (tradingPost, nextTradingPost) -> profits
       }
     }.toMap
@@ -38,7 +38,7 @@ object BestTradeRoutes {
 
     val startingTradingPost = PortOlisar
 
-    val maxProfit = tradingPosts.flatMap { startingTradingPost =>
+    val maxProfit = filteredTradingPosts.flatMap { startingTradingPost =>
       possibleDestinations(startingTradingPost).flatMap(startingTradingPost.bestProfit(_, ship, Int.MaxValue UEC))
     }.foldLeft(UEC(0)){ case (acc, (_, profit,_ )) => acc max profit }
 

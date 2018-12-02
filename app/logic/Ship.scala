@@ -9,7 +9,7 @@ import squants.{Time, Velocity}
 import scala.language.postfixOps
 
 object Ship extends FindByName[Ship] {
-  override val values: Seq[Ship] = Seq(
+  override val values: Set[Ship] = Set(
     `300i`,
     `315p`,
     `325a`,

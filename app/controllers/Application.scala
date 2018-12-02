@@ -1,69 +1,36 @@
 package controllers
 
 import javax.inject.Inject
-import logic.stanton.StantonSystem
-import logic.{Material, TradingPost}
-import model.PriceData.materialFormat
-import model.{PriceData, Prices}
-import play.Logger
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.data.format.Formats._
+import logic.{Material, TradingPost, Universe}
+import model.Prices
 import play.api.mvc._
+import logic.util.NameOrdering
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class Application @Inject()(
-  messagesAction: MessagesActionBuilder,
   components: MessagesControllerComponents,
-  priceUpdating: views.html.priceUpdating,
   tradingPostPicker: views.html.tradingPostPicker,
-)(implicit exec: ExecutionContext) extends MessagesAbstractController(components) {
-  val priceForm: Form[Seq[PriceData]] = Form(
-    mapping(
-      "prices" -> seq(mapping(
-        "material" -> of[Material],
-        "price" -> optional(of[Double]),
-        "is_buy" -> boolean
-      )(PriceData.apply)(PriceData.unapply))
-    )(Seq.apply)(Seq.unapplySeq)
-  )
+  pricesTable: views.html.pricesTable
+)(implicit exec: ExecutionContext) extends AbstractController (components) {
 
-  def index = Action {
-    Ok(tradingPostPicker(StantonSystem.tradingPosts))
+  def index = Action.async {
+    priceTable(Universe.tradingPosts, Material.materials)
   }
 
-  def prices(tradingPostName: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
-    TradingPost.findByName(tradingPostName).fold {
-      Logger.error(s"Could not find $tradingPostName")
-      Future.successful(BadRequest(tradingPostPicker(StantonSystem.tradingPosts)))
-    } {
-      tradingPost =>
-        Prices.allFor(tradingPost).map(_.map(_.toPriceData)).map { allPrices =>
-          Ok(priceUpdating(tradingPost, allPrices))
-        }
+  def priceTable(tradingPosts: Set[TradingPost], materials: Set[Material]) =
+    Future.sequence(tradingPosts.map { tradingPost =>
+      for {
+        buyPrices <- Prices.buyPrices(tradingPost)
+        filteredBuyPrices = buyPrices.filterKeys(materials.contains)
+        sellPrices <- Prices.sellPrices(tradingPost)
+        filteredSellPrices = sellPrices.filterKeys(materials.contains)
+      } yield tradingPost -> (filteredBuyPrices, filteredSellPrices)
+    }).map { prices =>
+      Ok(pricesTable(tradingPosts.toSeq.sorted(NameOrdering), materials.toSeq.sorted(NameOrdering), prices.toMap))
     }
-  }
 
-  def updatePrices(tradingPostName: String): Action[AnyContent] = Action.async { implicit request =>
-    priceForm.bindFromRequest.fold(
-      { errors =>
-        Logger.info(errors.errors.toString)
-        Future.successful(BadRequest(tradingPostPicker(StantonSystem.tradingPosts)))
-      }, { success =>
-        TradingPost.findByName(tradingPostName).fold {
-          Logger.error(s"Could not find $tradingPostName")
-          Future.successful(BadRequest(tradingPostPicker(StantonSystem.tradingPosts)))
-        } { tradingPost =>
-          val newPrices = success.flatMap(_.toPrice(tradingPost))
-          newPrices.foreach { price =>
-            Logger.info(s"${price.material.displayName} ${if (price.isBuy) "buy" else "sell"} price is now ${price.price}")
-          }
-          Prices.updatePrices(newPrices).map(_ =>
-            Redirect(routes.Application.prices(tradingPostName))
-          )
-        }
-      }
-    )
+  def tradePostPicker = Action {
+    Ok(tradingPostPicker(Universe.tradingPosts))
   }
 }

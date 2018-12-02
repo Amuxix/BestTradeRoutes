@@ -1,6 +1,6 @@
 package model
 
-import com.github.tminglei.slickpg._
+import com.github.tminglei.slickpg.{ExPostgresProfile, PgArraySupport, PgDate2Support, PgDateSupport}
 
 trait PostgresProfile
   extends ExPostgresProfile

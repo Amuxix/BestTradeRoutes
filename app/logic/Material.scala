@@ -23,12 +23,12 @@ sealed trait Drug extends Material {
 
 
 object Material extends FindByName[Material] {
-  lazy val materials = Seq(Astatine, Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
+  lazy val materials: Set[Material] = Set(Astatine, Hydrogen, Fluorine, Iodine, Chlorine, Agricium, Gold, Tungsten, Aluminum, Titanium, AgricultureSupplies, Quartz, Corundum,
     Diamond, Beryl, Laranite, ProcessedFood, Waste, Stims, DistilledSpirits, MedicalSupplies, Scrap, Alutruciatoxine, WiDoW)
 
   lazy val longestNameLength: Int = materials.map(_.toString.length).max
 
-  override lazy val values: Seq[Material] = materials
+  override lazy val values: Set[Material] = materials
 }
 
 case object Astatine extends Gas

@@ -1,0 +1,59 @@
+@import helper._
+@import logic.Ship
+@import logic.Material
+@import logic.TradingPost
+@import logic.util.beautify
+@this(main: views.html.main)
+@(ships: Seq[Ship], materials: Seq[Material], tradingPosts: Seq[TradingPost])
+
+@materialCheckbox(material: Material, id: Int, prefix: String) = {
+    <input type="checkbox" class="form-check-input" name="@{prefix}[@id].material" id="@{prefix}@{id}_material">
+    <label class="form-check-label" for="@{prefix}@{id}_material">@beautify(material.toString)</label>
+}
+
+@tradingPostCheckbox(tradingPost: TradingPost, id: Int, prefix: String) = {
+    <input type="checkbox" class="form-check-input" name="@{prefix}[@id].trading_post" id="@{prefix}@{id}trading_post">
+    <label class="form-check-label" for="@{prefix}@{id}trading_post">@beautify(tradingPost.toString)</label>
+}
+
+@main("Price Check Route") {
+    @helper.form(action = routes.PriceCheckRoute.getPriceCheckRoute) {
+        <p>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#ignoredMaterials" aria-expanded="false" aria-controls="ignoredMaterials">Materials to ignore</button>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#basesIgnored" aria-expanded="false" aria-controls="basesIgnored">Bases to ignore</button>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#buyPricesKnown" aria-expanded="false" aria-controls="buyPricesKnown">Buy prices known</button>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#sellPricesKnown" aria-expanded="false" aria-controls="sellPricesKnown">Sell prices known</button>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#materialsInHull" aria-expanded="false" aria-controls="materialsInHull">Materials already in ship</button>
+        </p>
+        <div class="collapse multi-collapse" id="ignoredMaterials">
+            <div class="card card-body">
+                <h5 class="card-title">Buy prices known</h5>
+                @materials.zipWithIndex.map { case (material, id) => materialCheckbox(material, id, "ignored_materials") }
+            </div>
+        </div>
+        <div class="collapse multi-collapse" id="basesIgnored">
+            <div class="card card-body">
+                <h5 class="card-title">Bases to ignore</h5>
+                @tradingPosts.zipWithIndex.map { case (tradingPost, id) => tradingPostCheckbox(tradingPost, id, "bases_ignored") }
+            </div>
+        </div>
+        <div class="collapse multi-collapse" id="buyPricesKnown">
+            <div class="card card-body">
+                <h5 class="card-title">Buy prices known</h5>
+                @materials.zipWithIndex.map { case (material, id) => materialCheckbox(material, id, "buy_prices_known") }
+            </div>
+        </div>
+        <div class="collapse multi-collapse" id="sellPricesKnown">
+            <div class="card card-body">
+                <h5 class="card-title">Sell prices known</h5>
+                @materials.zipWithIndex.map { case (material, id) => materialCheckbox(material, id, "sell_prices_known") }
+            </div>
+        </div>
+        <div class="collapse multi-collapse" id="materialsInHull">
+            <div class="card card-body">
+                <h5 class="card-title">Materials already in ship</h5>
+                @materials.zipWithIndex.map { case (material, id) => materialCheckbox(material, id, "materials_in_hull") }
+            </div>
+        </div>
+    }
+}

@@ -31,7 +31,7 @@
 }
 
 @button(tradingPost: TradingPost) = {
-    <a href="@routes.Application.prices(tradingPost.toString)" class="btn btn-outline-primary btn-block" role="button" aria-pressed="true">@beautify(tradingPost.toString)</a>
+    <a href="@routes.PriceUpdating.prices(tradingPost.toString)" class="btn btn-outline-primary btn-block" role="button" aria-pressed="true">@beautify(tradingPost.toString)</a>
 }
 
 @join(htmls: Seq[Html]) = {

@@ -1,6 +1,5 @@
 package logic
 
-import logic.stanton.StantonSystem
 import squants.space.LengthConversions._
 import squants.space.{Kilometers, Length}
 
@@ -129,8 +128,7 @@ abstract class SpaceStation extends Satellite {
 }
 
 object CelestialBody {
-  lazy val celestialBodies: Set[CelestialBody] = StantonSystem.celestialBodies
-  lazy val longestNameLength: Int = celestialBodies.map(_.toString.length).max
+  lazy val longestNameLength: Int = Universe.celestialBodies.map(_.toString.length).max
 
   /**
     * Calculates the position of a given body using the system charters.

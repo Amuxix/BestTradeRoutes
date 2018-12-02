@@ -6,12 +6,12 @@ import java.util.NoSuchElementException
 
 import logic.{Material, TradingPost}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object Prices extends PostgresProfile {
   import api._
-  private val db = Database.forConfig("db.default")
+  private lazy val db = Database.forConfig("db.default")
 
   implicit val tradingPostColumnType: BaseColumnType[TradingPost] = MappedColumnType.base[TradingPost, String](
     _.toString,
@@ -41,20 +41,14 @@ object Prices extends PostgresProfile {
   private val prices = TableQuery[PriceTable]
 
   private def materialsPrices(tradingPost: TradingPost, isBuy: Boolean): DBIO[Seq[Price]] =
-      prices
-        .filter(_.tradingPost === tradingPost)
-        .filter(_.isBuy === isBuy)
-        .result
+    prices
+      .filter(_.tradingPost === tradingPost)
+      .filter(_.isBuy === isBuy)
+      .result
 
   private def pricesMap(tradingPost: TradingPost, isBuy: Boolean): Future[Map[Material, Double]] =
     db.run(materialsPrices(tradingPost, isBuy))
       .map(_.map(price => price.material -> price.price).toMap)
-
-  def buyPrices(tradingPost: TradingPost): Future[Map[Material, Double]] =
-    pricesMap(tradingPost, isBuy = true)
-
-  def sellPrices(tradingPost: TradingPost): Future[Map[Material, Double]] =
-    pricesMap(tradingPost, isBuy = false)
 
   private def price(tradingPost: TradingPost, material: Material, isBuy: Boolean): Future[Double] =
     db.run(
@@ -66,6 +60,20 @@ object Prices extends PostgresProfile {
         .result
         .head
     )
+
+  private def update(newPrice: Price): DBIO[Int] =
+    prices
+      .filter(_.tradingPost === newPrice.tradingPost)
+      .filter(_.isBuy === newPrice.isBuy)
+      .filter(_.material === newPrice.material)
+      .map(p => (p.price, p.updatedAt))
+      .update((newPrice.price, Timestamp.from(Instant.now)))
+
+  def buyPrices(tradingPost: TradingPost): Future[Map[Material, Double]] =
+    pricesMap(tradingPost, isBuy = true)
+
+  def sellPrices(tradingPost: TradingPost): Future[Map[Material, Double]] =
+    pricesMap(tradingPost, isBuy = false)
 
   def buyPrice(tradingPost: TradingPost, material: Material): Future[Double] =
     price(tradingPost, material, isBuy = true)
@@ -80,18 +88,10 @@ object Prices extends PostgresProfile {
         .result
     )
 
-  private def update(newPrice: Price): DBIO[Int] =
-    prices
-      .filter(_.tradingPost === newPrice.tradingPost)
-      .filter(_.isBuy === newPrice.isBuy)
-      .filter(_.material === newPrice.material)
-      .map(p => (p.price, p.updatedAt))
-      .update((newPrice.price, Timestamp.from(Instant.now)))
-
   def updatePrices(newPrices: Seq[Price]): Future[Seq[Int]] = {
-    Future.sequence(newPrices.map(p => db.run(update(p))))
+    val value = DBIO.sequence(newPrices.map(update))
+    db.run(value)
   }
-    //db.run(DBIO.sequence(newPrices.map(update)))
 
   def insertAll(newPrices: Seq[Price]): Future[Option[Int]] =
     db.run(prices ++= newPrices)

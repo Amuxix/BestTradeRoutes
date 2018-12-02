@@ -1,6 +1,11 @@
 GET         /                           controllers.Application.index
 
-GET         /prices/:tradingPost        controllers.Application.prices(tradingPost)
-POST        /prices/:tradingPost        controllers.Application.updatePrices(tradingPost)
+GET         /priceUpdating              controllers.Application.tradePostPicker
+
+GET         /prices/:tradingPost        controllers.PriceUpdating.prices(tradingPost)
+POST        /prices/:tradingPost        controllers.PriceUpdating.updatePrices(tradingPost)
+
+GET         /routes/priceCheck          controllers.PriceCheckRoute.getPriceCheckRoute
+POST        /routes/priceCheck          controllers.PriceCheckRoute.calculatePriceCheckRoute
 
 ->          /webjars                    webjars.Routes

@@ -1,0 +1,17 @@
+@import logic.Ship
+@import logic.util.beautify
+@(ships: Seq[Ship])
+
+@option(ship: Ship) = {
+    <option value="@ship.toString">@beautify(ship.toString)</option>
+}
+
+<div class="input-group mb-1">
+    <div class="input-group-prepend">
+        <label class="input-group-text" for="shipSelector">Options</label>
+    </div>
+    <select class="custom-select" id="shipSelector">
+        <option selected>Choose...</option>
+        @ships.map(option)
+    </select>
+</div>
