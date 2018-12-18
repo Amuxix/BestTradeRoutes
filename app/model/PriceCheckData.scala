@@ -5,7 +5,6 @@ import logic.{Material, TradingPost}
 case class PriceCheckData(
   ignoredMaterials: Seq[Material],
   basesIgnored: Seq[TradingPost],
-  buyPricesKnown: Seq[Material],
-  sellPricesKnown: Seq[Material],
+  basesKnown: Seq[TradingPost],
   materialsInHull: Seq[Material],
 )

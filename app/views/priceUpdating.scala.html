@@ -18,7 +18,7 @@
         <div class="input-group-prepend col-4 p-0 rounded-left">
             <span class="form-control input-group-text @color(isBuy) bg-white">@{material.displayName}</span>
         </div>
-        <input type="number" class="form-control @color(isBuy) text-dark col-8" name="prices[@id].price" id="prices_@{id}_price" placeholder="@price" aria-label="@price" tabindex=@{if (isBuy) 1 else 2}>
+        <input type="number" class="form-control @color(isBuy) text-dark col-8" autocomplete="off" name="prices[@id].price" id="prices_@{id}_price" placeholder="@price" aria-label="@price" tabindex=@{if (isBuy) 1 else 2}>
     </div>
 }
 

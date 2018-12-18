@@ -45,7 +45,8 @@ class PriceUpdating @Inject()(
       { errors =>
         Logger.info(errors.errors.toString)
         Future.successful(BadRequest(tradingPostPicker(Universe.tradingPosts)))
-      }, { success =>
+      },
+      { success =>
         TradingPost.findByName(tradingPostName).fold {
           Logger.error(s"Could not find $tradingPostName")
           Future.successful(BadRequest(tradingPostPicker(Universe.tradingPosts)))

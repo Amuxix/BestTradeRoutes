@@ -1,21 +1,23 @@
 package logic
 
-import logic.Base.filteredTradingPosts
-import logic.stanton.bases._
-
 import scala.language.postfixOps
 
-object BestPriceCheckRoute {
+case class BestPriceCheckRoute(
+  startingBase: TradingPost,
+  ignoredMaterials: Set[Material],
+  basesIgnored: Set[TradingPost],
+  materialsInHull: Set[Material],
+  knownBases: Seq[TradingPost],
+) {
   type PriceCheckMap = Map[TradingPost, Set[Material]]
 
-  val tradingPostsToCheck: Seq[TradingPost] = filteredTradingPosts.toSeq.sortBy(tradingPost => (tradingPost.sells.size, -tradingPost.buys.size))
-  val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
-    prices + tradingPost.buys.size + tradingPost.sells.size
-  )
+  //val tradingPostsToCheck: Seq[TradingPost] = filteredTradingPosts.toSeq.sortBy(tradingPost => (tradingPost.sells.size, -tradingPost.buys.size))
+  val tradingPostsToCheck: Seq[TradingPost] = (Universe.tradingPosts -- basesIgnored).toSeq
+    .sortBy(tradingPost => (tradingPost.sells.size, -tradingPost.buys.size))
 
-  val startingBase: TradingPost = GrimHex
-  val knownBases: Seq[TradingPost] = Seq(BountyfulHarvestHydroponics, TerraMillsHydroFarm, GaletteFamilyFarms, HickesResearchOutpost,
-    ArcCorpMiningArea157, BensonMiningOutpost, DeakingReaserchOutpost)
+  val totalPrices: Int = tradingPostsToCheck.foldLeft(0)((prices, tradingPost) =>
+    prices + (tradingPost.buys -- ignoredMaterials).size + (tradingPost.sells -- ignoredMaterials).size
+  )
 
   def main(args: Array[String]): Unit = {
     var bestRouteSize = totalPrices * 2
@@ -52,17 +54,17 @@ object BestPriceCheckRoute {
     }.toMap
     tradingPostsToCheck.par.foreach { tradingPost =>
       val (updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked) =
-        updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, startingBase.buys)
+        updatePriceCheckMaps(tradingPost, buyPriceCheckMap, sellPriceCheckMap, (materialsInHull ++ startingBase.buys) -- ignoredMaterials)
       look(updatedBuyPrices, updatedSellPrices, updatedMaterialsInHull, updatedPricesChecked, Seq(startingBase, tradingPost), startingBase.distanceTo(tradingPost))
     }
   }
 
   def updatePriceCheckMaps(tradingPost: TradingPost, buyPriceCheckMap: PriceCheckMap, sellPriceCheckMap: PriceCheckMap, materialsInHull: Set[Material]): (PriceCheckMap, PriceCheckMap, Set[Material], Int) = {
-    val updatedBuyPriceCheckMap = buyPriceCheckMap.updated(tradingPost, tradingPost.buys)
+    val updatedBuyPriceCheckMap = buyPriceCheckMap.updated(tradingPost, tradingPost.buys -- ignoredMaterials)
 
-    val updatedMaterialsInHull = materialsInHull ++ tradingPost.buys
+    val updatedMaterialsInHull = materialsInHull ++ (tradingPost.buys -- ignoredMaterials)
 
-    val updatedSellPriceCheckMap = sellPriceCheckMap.updated(tradingPost, tradingPost.sells intersect updatedMaterialsInHull)
+    val updatedSellPriceCheckMap = sellPriceCheckMap.updated(tradingPost, (tradingPost.sells -- ignoredMaterials) intersect updatedMaterialsInHull)
     val pricesChecked = updatedBuyPriceCheckMap.foldLeft(0)(_ + _._2.size) + updatedSellPriceCheckMap.foldLeft(0)(_ + _._2.size)
     (updatedBuyPriceCheckMap, updatedSellPriceCheckMap, updatedMaterialsInHull, pricesChecked)
   }
