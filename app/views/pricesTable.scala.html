@@ -1,0 +1,41 @@
+@import logic.Material
+@import logic.TradingPost
+@import logic.util.beautify
+@this(main: views.html.main)
+@(tradingPosts: Seq[TradingPost], materials: Seq[Material], prices: Map[TradingPost, (Map[Material, Double], Map[Material, Double])])
+
+@column(text: String, color: String = "") = {
+    <th scope="col" class="@color">
+        @beautify(text)
+    </th>
+}
+
+@materialRow(material: Material, tradingPosts: Seq[TradingPost]) = {
+    <tr>
+        @column(material.toString)
+        @{
+            tradingPosts.map { tp =>
+                val (buyPrices, sellPrices) = prices(tp)
+                val text = buyPrices.get(material)
+                        .orElse(sellPrices.get(material))
+                        .fold("")(_.toString)
+                val color = buyPrices.get(material).fold("text-success")(_ => "text-warning")
+                column(text, color)
+            }
+        }
+    </tr>
+}
+
+@main("Prices Table") {
+    <div class="table-responsive-sm">
+        <table class="table table-sm table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    @tradingPosts.map(tp => column(tp.toString))
+                </tr>
+            </thead>
+            @materials.map(material => materialRow(material, tradingPosts))
+        </table>
+    </div>
+}

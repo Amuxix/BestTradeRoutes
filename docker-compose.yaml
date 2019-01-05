@@ -1,0 +1,11 @@
+version: '2.0'
+
+services:
+  postgres:
+    image:  library/postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: starcitizen_tools
+      POSTGRES_PASSWORD: starcitizen_tools
+      POSTGRES_DB: starcitizen_tools

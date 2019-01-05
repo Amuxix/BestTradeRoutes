@@ -1,0 +1,56 @@
+@import helper._
+@import logic.Ship
+@import logic.Material
+@import logic.TradingPost
+@import logic.util.beautify
+@this(main: views.html.main)
+@(ships: Seq[Ship], materials: Seq[Material], tradingPosts: Seq[TradingPost])
+
+@checkbox(thing: Any, id: Int, prefix: String, thingType: String) = {
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" name="@{prefix }[@id].@thingType" id="@{prefix } @{id }_@thingType">
+    <label class="form-check-label" for="@{prefix } @{id }_@thingType">@beautify(thing.toString)</label>
+  </div>
+}
+
+@col(element: Html) = {
+  <div class="col">
+    @element
+  </div>
+}
+
+@row(elements: Seq[Html]) = {
+  <div class="row">
+    @elements.map(col)
+  </div>
+}
+
+@expandingTable(title: String, target: String, things: Seq[Any], thingType: String, columns: Int) = {
+  <button class="btn btn-outline-secondary btn-block" type="button" data-toggle="collapse" data-target="#@target" aria-expanded="false" aria-controls="@target">
+    @title
+  </button>
+  <div class="collapse multi-collapse" id="@target">
+    <div class="card card-body">
+      @{
+        things
+          .zipWithIndex.map {
+            case (thing, id) => checkbox(thing, id, target, thingType)
+          }
+          .grouped(columns)
+          .map(row)
+      }
+    </div>
+  </div>
+}
+
+@main("Price Check Route") {
+  @helper.form(action = routes.PriceCheckRoute.calculatePriceCheckRoute) {
+    @(expandingTable("Materials to ignore", "ignored_materials", materials, "material", 4))
+    @(expandingTable("Bases to ignore", "bases_ignored", tradingPosts, "trading_post", 3))
+    @(expandingTable("Bases with known prices", "bases_known", tradingPosts, "trading_post", 3))
+    @(expandingTable("Materials already in ship", "materials_in_hull", materials, "material", 4))
+
+    @shipPicker(ships)
+    <button class="btn btn-primary btn-block" tabindex=3 type="submit">Submit</button>
+  }
+}

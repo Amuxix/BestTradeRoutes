@@ -1,0 +1,58 @@
+@import logic.TradingPost
+@import logic.CelestialBody
+@import scala.collection.immutable
+@import play.twirl.api.HtmlFormat
+@import logic.util.beautify
+@this(main: views.html.main)
+@(tradingPosts: Set[TradingPost])
+
+@row(html: Html) = {
+    <div class="row mb-1">
+        @html
+    </div>
+}
+
+@col(html: Html)(implicit colSize: Int) = {
+    <div class="col-@colSize mb-1 pl-0">
+        @html
+    </div>
+}
+
+@headCol(body: String)(implicit colSize: Int) = {
+    <div class="col-@colSize mb-1 pl-0">
+        <span class="btn btn-primary btn-lg btn-block disabled">@beautify(body)</span>
+    </div>
+}
+
+@headRow(bodies: Seq[String])(implicit colSize: Int) = {
+    <div class="row mb-1">
+        @bodies.map(headCol)
+    </div>
+}
+
+@button(tradingPost: TradingPost) = {
+    <a href="@routes.PriceUpdating.prices(tradingPost.toString)" class="btn btn-outline-primary btn-block" role="button" aria-pressed="true">@beautify(tradingPost.toString)</a>
+}
+
+@join(htmls: Seq[Html]) = {
+    @HtmlFormat.fill(htmls.to[immutable.Seq])
+}
+
+
+@main("Trade route optimizer") {
+    @{
+        val map = tradingPosts.groupBy(_.celestialBody).mapValues(_.toSeq.sortBy(_.toString).zipWithIndex.map(_.swap).toMap)
+        val headers = map.keySet.toSeq.map(_.toString).sorted
+        implicit val colSize: Int = 12 / headers.size
+        val head = headRow(map.keySet.toSeq.map(_.toString).sorted)
+
+        val values: Seq[Map[Int, TradingPost]] = map.toSeq.sortBy(_._1.toString).map(_._2)
+        join(
+            head +: (0 to values.map(_.size).max).map { i =>
+                row(join(values.map { m =>
+                    col(m.get(i).fold(HtmlFormat.empty)(button))
+                }))
+            }
+        )
+    }
+}

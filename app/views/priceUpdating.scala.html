@@ -1,0 +1,66 @@
+@import logic.TradingPost
+@import logic.Material
+@import model.PriceData
+@import play.twirl.api.HtmlFormat
+@import helper._
+@this(main: views.html.main)
+@(tradingPost: TradingPost, prices: Seq[PriceData])(implicit request: MessagesRequestHeader)
+
+@color(isBuy: Boolean) = {
+    border border-@{if (isBuy) "warning" else "success"} text text-@{if (isBuy) "warning" else "success"}
+}
+
+@row(material: Material, price: Double, isBuy: Boolean, id: Int) = {
+    <input type="hidden" name="prices[@id].material" id="prices@{id}_material" value="@{material.toString}" tabindex="-1" readonly>
+    <input type="hidden" name="prices[@id].is_buy" id="prices@{id}_is_buy" value="@isBuy" tabindex="-1" readonly>
+
+    <div class="input-group">
+        <div class="input-group-prepend col-4 p-0 rounded-left">
+            <span class="form-control input-group-text @color(isBuy) bg-white">@{material.displayName}</span>
+        </div>
+        <input type="number" class="form-control @color(isBuy) text-dark col-8" autocomplete="off" name="prices[@id].price" id="prices_@{id}_price" placeholder="@price" aria-label="@price" tabindex=@{if (isBuy) 1 else 2}>
+    </div>
+}
+
+@cell(h: Option[Html]) = {
+    <div class="col-6 px-1">
+        @h.getOrElse(HtmlFormat.empty)
+    </div>
+}
+@fullRow(buy: Option[Html], sell: Option[Html]) = {
+    <div class="row mb-1">
+        @cell(buy)
+        @cell(sell)
+    </div>
+}
+
+@main("Price Updating") {
+    @helper.form(action = routes.PriceUpdating.updatePrices(tradingPost.toString)) {
+        @CSRF.formField
+        <div class="row mb-1">
+            <div class="col-6 px-1">
+                <span class="btn btn-warning btn-block disabled">Buy</span>
+            </div>
+            <div class="col-6 px-1">
+                <span class="btn btn-success btn-block disabled">Sell</span>
+            </div>
+        </div>
+        @{
+            val p = prices
+                .zipWithIndex
+                .collect { case (PriceData(material, Some(price), isBuy), id) =>
+                   (isBuy, Some(row(material, price, isBuy, id)))
+                }
+            p.collect { case (true, data) => data }
+                .zipAll(p.collect { case (false, data) => data }, None, None)
+                .map { case (buy, sell) =>
+                    fullRow(buy, sell)
+                }
+        }
+        <div class="row mt-2">
+            <div class="col-12 px-1">
+                <button class="btn btn-primary btn-block" tabindex=3 type="submit">Submit</button>
+            </div>
+        </div>
+    }
+}
