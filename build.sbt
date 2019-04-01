@@ -16,4 +16,5 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "squants" % "1.3.0",
   "org.webjars" %% "webjars-play" % "2.6.3",
   "org.webjars" % "bootstrap" % "4.0.0-2",
+  "org.typelevel" %% "cats-core" % "1.5.0",
 )

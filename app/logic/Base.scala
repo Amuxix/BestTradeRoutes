@@ -1,13 +1,14 @@
 package logic
 
+import cats.data.OptionT
+import cats.implicits._
 import logic.BestTradeRoutes.{Trade, profitToTradingPosts}
 import logic.util.FindByName
 import model.Prices
 import squants.space.Length
 import squants.space.LengthConversions._
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent._
 import scala.language.postfixOps
 
 object Base {
@@ -58,8 +59,8 @@ abstract class Base {
   * This represents a base that has a trade terminal that can buy and/or sell materials.
   */
 abstract class TradingPost extends Base {
-  def buyPrice(material: Material): Double = Await.result(Prices.buyPrice(this, material), Duration.Inf)
-  def sellPrice(material: Material): Double = Await.result(Prices.sellPrice(this, material), Duration.Inf)
+  def buyPrice(material: Material): Future[Double] = Prices.buyPrice(this, material)
+  def sellPrice(material: Material): Future[Double] = Prices.sellPrice(this, material)
   val buys: Set[Material]
   val sells: Set[Material]
 
@@ -69,25 +70,32 @@ abstract class TradingPost extends Base {
     }
   }
 
-  def bestProfit(other: TradingPost, ship: Ship, investment: UEC): Option[Trade] = {
-    def amountAndProfit(material: Material, unitaryProfit: Double) = {
-      val cost = buyPrice(material)
-      val moneyBuys: Int = (investment.value / cost).toInt
-      val amountToBuy: Int = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
-      val profit = UEC((amountToBuy * unitaryProfit).toInt)
-      (amountToBuy, profit)
+  def bestProfit(other: TradingPost, ship: Ship, investment: UEC)(implicit ec: ExecutionContext): OptionT[Future, Trade] = {
+    def amountAndProfit(material: Material, unitaryProfit: Double): OptionT[Future, (Int, UEC)] = {
+      OptionT.liftF(buyPrice(material).map { cost =>
+        val moneyBuys: Int = (investment.value / cost).toInt
+        val amountToBuy: Int = Seq(Some(ship.cargoSizeInUnits), Some(moneyBuys), material.maxSupply, material.maxDemand).flatten.min
+        val profit = UEC((amountToBuy * unitaryProfit).toInt)
+        (amountToBuy, profit)
+      })
     }
 
-    profitToTradingPosts(this, other).foldLeft(None: Option[Trade]){
-      case (None, (material, Some(unitaryProfit))) =>
-        val (amountToBuy: Int, profit: UEC) = amountAndProfit(material, unitaryProfit)
-        Some((material, profit, amountToBuy))
-      case (previous @ Some((_, bestProfit, _)), (material, Some(unitaryProfit))) =>
-        val (amountToBuy: Int, profit: UEC) = amountAndProfit(material, unitaryProfit)
-        if (profit > bestProfit) {
-          Some((material,  profit, amountToBuy))
-        } else {
-          previous
+    profitToTradingPosts(this, other).foldLeft(OptionT.none[Future, Trade]){
+      case (OptionT.none, (material, Some(unitaryProfit))) =>
+        amountAndProfit(material, unitaryProfit).map {
+          case (amountToBuy, profit) => (material, profit, amountToBuy)
+        }
+
+      case (previous, (material, Some(unitaryProfit))) =>
+        for {
+          prev @ (_, bestProfit, _) <- previous
+          (amountToBuy, profit) <- amountAndProfit(material, unitaryProfit)
+        } yield {
+          if (profit > bestProfit) {
+            (material,  profit, amountToBuy)
+          } else {
+            prev
+          }
         }
       case (previous, _) => previous
     }
